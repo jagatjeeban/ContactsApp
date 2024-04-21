@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import { View, Text, SafeAreaView, StyleSheet } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SplashScreen = ({navigation}) => {
 
@@ -9,10 +10,22 @@ const SplashScreen = ({navigation}) => {
     useEffect(() => {
         if(isFocused){
             setTimeout(() => {
-                navigation.navigate('Login');
-            }, 3000);
+                checkLogin();
+            }, 2000);
         }
-    });
+    }, [isFocused]);
+
+    //function to check if user is already logged in
+    const checkLogin = async() => {
+        const emailId = await AsyncStorage.getItem('EMAIL');
+        const password = await AsyncStorage.getItem('PASSWORD');
+
+        if(emailId && password){
+            navigation.navigate('Contacts');
+        } else {
+            navigation.navigate('Login');
+        }
+    }
     
     return(
         <SafeAreaView style={styles.safeAreaView}>

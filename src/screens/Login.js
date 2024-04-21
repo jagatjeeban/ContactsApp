@@ -1,9 +1,12 @@
 import { View, Text, SafeAreaView, TextInput, TouchableOpacity, StyleSheet } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { showMessage } from 'react-native-flash-message';
+import { useIsFocused } from '@react-navigation/native';
 
 const Login = ({navigation}) => {
+
+    const isFocused = useIsFocused();
 
     const [ emailId, setEmailId ]                     = useState('');
     const [ password, setPassword ]                   = useState('');
@@ -77,7 +80,7 @@ const styles = StyleSheet.create({
     mainContainer: {
         flex: 1, 
         alignItems:'flex-start', 
-        justifyContent:'center', 
+        marginTop:'50%', 
         marginHorizontal:20
     },
     inputContainer: {
