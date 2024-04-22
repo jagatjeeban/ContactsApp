@@ -1,8 +1,15 @@
-import { View, Text, SafeAreaView, TextInput, TouchableOpacity, StyleSheet } from 'react-native'
+import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { showMessage } from 'react-native-flash-message';
 import { useIsFocused } from '@react-navigation/native';
+
+//import constants
+import { Colors, Strings } from '../assets/common/constants';
+
+//import svgs
+import SvgGoogleLogo from '../assets/icons/svg/googleLogo.svg';
+import SvgWelcome    from '../assets/icons/svg/welcome.svg';
 
 const Login = ({navigation}) => {
 
@@ -45,29 +52,16 @@ const Login = ({navigation}) => {
   return (
     <SafeAreaView style={{flex: 1}}>
         <View style={styles.mainContainer}>
-            <Text style={{color:'black', fontSize:25, fontWeight: 600}}>Log In</Text>
-            <View style={styles.inputContainer}>
-                <TextInput
-                    placeholder='Enter Email Id'
-                    placeholderTextColor={'grey'}
-                    value={emailId}
-                    keyboardType='email-address'
-                    style={[styles.inputStyle, {borderColor: emailInputColor}]}
-                    onChangeText={(e) => setEmailId(e)}
-                />
+            <View style={{marginTop:'30%'}}>
+                <SvgWelcome width={276} height={214} />
             </View>
-            <View style={styles.inputContainer}>
-                <TextInput
-                    placeholder='Enter Password'
-                    placeholderTextColor={'grey'}
-                    value={password}
-                    secureTextEntry={true}
-                    style={[styles.inputStyle, {borderColor: passInputColor}]}
-                    onChangeText={(e) => setPassword(e)}
-                />
+            <View style={{marginTop: 32, alignItems:'center'}}>
+                <Text style={{color: Colors.Base_White, fontSize: 30, fontWeight: 500}}>Welcome To Connect</Text>
+                <Text style={{color: Colors.Base_Medium_Grey, fontSize: 18, marginTop: 16}}>{Strings.WelcomeText}</Text>
             </View>
-            <TouchableOpacity onPress={() => validateForm()} activeOpacity={0.7} style={styles.loginBtn}>
-                <Text style={{color:'white', fontSize:15, fontWeight:500}}>Log In to Contacts</Text>
+            <TouchableOpacity activeOpacity={1} onPress={() => navigation.navigate('Contacts')} style={styles.loginBtn}>
+                <SvgGoogleLogo />
+                <Text style={{color: Colors.Base_White, fontSize: 18, fontWeight: 500, marginLeft: 20}}>Continue with Google</Text>
             </TouchableOpacity>
         </View>
     </SafeAreaView>
@@ -79,9 +73,10 @@ export default Login;
 const styles = StyleSheet.create({
     mainContainer: {
         flex: 1, 
-        alignItems:'flex-start', 
-        marginTop:'50%', 
-        marginHorizontal:20
+        backgroundColor: Colors.Primary,
+        alignItems:'center', 
+        // marginTop:'50%', 
+        paddingHorizontal:20
     },
     inputContainer: {
         width:'100%', 
@@ -95,12 +90,17 @@ const styles = StyleSheet.create({
         color: 'black'
     },
     loginBtn: {
-        backgroundColor: 'black', 
-        marginTop:20, 
+        flexDirection:'row',
+        alignItems:'center',
+        position:'absolute', 
+        bottom: 30, 
+        backgroundColor: Colors.Primary_Light, 
         alignItems:'center', 
-        justifyContent:'center', 
-        padding:15, 
-        borderRadius:10, 
-        width:'100%'
+        justifyContent:"center", 
+        borderRadius:12, 
+        paddingVertical: 15, 
+        width:'100%',
+        borderWidth: 1,
+        borderColor: Colors.Base_Grey
     },
 })

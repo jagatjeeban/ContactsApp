@@ -20,11 +20,12 @@ const SplashScreen = ({navigation}) => {
         const emailId = await AsyncStorage.getItem('EMAIL');
         const password = await AsyncStorage.getItem('PASSWORD');
 
-        if(emailId && password){
-            navigation.navigate('Contacts');
-        } else {
-            navigation.navigate('Login');
-        }
+        // if(emailId && password){
+        //     navigation.navigate('Contacts');
+        // } else {
+        //     navigation.navigate('Login');
+        // }
+        navigation.navigate('Login');
     }
     
     return(

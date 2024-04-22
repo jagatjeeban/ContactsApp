@@ -69,7 +69,7 @@ const Contacts = ({navigation}) => {
       <View style={{flex: 1, margin:20}}>
         <View style={{width:'100%', flexDirection:'row', justifyContent:'space-between'}}>
           <Text style={{color:'black', fontSize: 30, marginBottom: 30, fontWeight: 600}}>All Contacts</Text>
-          <TouchableOpacity onPress={() => null} style={{marginTop:10}}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{marginTop:10}}>
             <Text style={{color:'red', fontSize: 20, fontWeight: 500}}>Log Out</Text>
           </TouchableOpacity>
         </View>
