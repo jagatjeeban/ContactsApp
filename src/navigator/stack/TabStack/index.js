@@ -21,7 +21,7 @@ const TabStackNavigator = () => {
 
     return(
         <Tab.Navigator screenOptions={{headerShown: false}} tabBar={(props) => <TabOption {...props} />}>
-            <Tab.Screen name="AddContact" component={AddContact} />
+            <Tab.Screen name="Contacts" component={Contacts} />
         </Tab.Navigator>
     )
 }

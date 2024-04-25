@@ -101,10 +101,11 @@ const Contacts = ({navigation}) => {
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <Header />
-      <View style={{width:'100%', height:'100%', paddingHorizontal: 20}}>
+      <View style={{flex: 1, paddingHorizontal: 20}}>
         <FlatList
           data={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]}
           showsVerticalScrollIndicator={false}
+          ListFooterComponent={<View style={{height: 10}} />}
           renderItem={ContactItem}
         />
       </View>
