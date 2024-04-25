@@ -5,11 +5,11 @@ import { showMessage } from 'react-native-flash-message';
 import { useIsFocused } from '@react-navigation/native';
 
 //import constants
-import { Colors, Strings } from '../assets/common/constants';
+import { Colors, FontFamily, Strings } from '../common/constants';
 
 //import svgs
 import SvgGoogleLogo from '../assets/icons/svg/googleLogo.svg';
-import SvgWelcome    from '../assets/icons/svg/welcome.svg';
+import SvgWelcome    from '../assets/images/svg/welcome.svg';
 
 const Login = ({navigation}) => {
 
@@ -43,25 +43,25 @@ const Login = ({navigation}) => {
         try {
             await AsyncStorage.setItem('EMAIL', emailId);
             await AsyncStorage.setItem('PASSWORD', password);
-            navigation.navigate('Contacts');
+            // navigation.navigate('Contacts');
         } catch (error) {
             console.log(error);
         }
     }
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={styles.safeAreaView}>
         <View style={styles.mainContainer}>
             <View style={{marginTop:'30%'}}>
                 <SvgWelcome width={276} height={214} />
             </View>
             <View style={{marginTop: 32, alignItems:'center'}}>
-                <Text style={{color: Colors.Base_White, fontSize: 30, fontWeight: 500}}>Welcome To Connect</Text>
-                <Text style={{color: Colors.Base_Medium_Grey, fontSize: 18, marginTop: 16}}>{Strings.WelcomeText}</Text>
+                <Text style={styles.welcomeToConnect}>Welcome To Connect</Text>
+                <Text style={styles.appDescription}>{Strings.WelcomeText}</Text>
             </View>
-            <TouchableOpacity activeOpacity={1} onPress={() => navigation.navigate('Contacts')} style={styles.loginBtn}>
+            <TouchableOpacity activeOpacity={1} onPress={() => null} style={styles.loginBtn}>
                 <SvgGoogleLogo />
-                <Text style={{color: Colors.Base_White, fontSize: 18, fontWeight: 500, marginLeft: 20}}>Continue with Google</Text>
+                <Text style={styles.loginBtnText}>Continue with Google</Text>
             </TouchableOpacity>
         </View>
     </SafeAreaView>
@@ -71,11 +71,14 @@ const Login = ({navigation}) => {
 export default Login;
 
 const styles = StyleSheet.create({
+    safeAreaView: {
+        flex: 1,
+        backgroundColor: Colors.BgColor
+    },
     mainContainer: {
         flex: 1, 
-        backgroundColor: Colors.Primary,
+        backgroundColor: Colors.BgColor,
         alignItems:'center', 
-        // marginTop:'50%', 
         paddingHorizontal:20
     },
     inputContainer: {
@@ -94,7 +97,7 @@ const styles = StyleSheet.create({
         alignItems:'center',
         position:'absolute', 
         bottom: 30, 
-        backgroundColor: Colors.Primary_Light, 
+        backgroundColor: Colors.Bg_Light, 
         alignItems:'center', 
         justifyContent:"center", 
         borderRadius:12, 
@@ -102,5 +105,24 @@ const styles = StyleSheet.create({
         width:'100%',
         borderWidth: 1,
         borderColor: Colors.Base_Grey
+    },
+    welcomeToConnect: {
+        color: Colors.Base_White, 
+        fontSize: 30, 
+        fontWeight: 500, 
+        fontFamily: FontFamily.OutfitMedium
+    },
+    appDescription: {
+        color: Colors.Base_Medium_Grey, 
+        fontSize: 18, 
+        marginTop: 16, 
+        fontFamily: FontFamily.OutfitRegular
+    },
+    loginBtnText: {
+        color: Colors.Base_White, 
+        fontSize: 18, 
+        fontWeight: 500, 
+        marginLeft: 20, 
+        fontFamily: FontFamily.OutfitMedium
     },
 })

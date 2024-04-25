@@ -1,30 +1,15 @@
-import { TransitionPresets, createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import SplashScreen from "../screens";
-import Login from "../screens/Login";
-import Contacts from "../screens/Contacts";
-import AddContact from "../screens/AddContact";
+import AuthStackNavigator from "./stack/AuthStack";
+import HomeStackNavigator from "./stack/HomeStack";
 
-const Stack = createStackNavigator();
+const MainStackNavigator = () => {
 
-const MainNavigator = () => {
-
-    const screenOptionStyle = {
-        headerShown: false,
-        gestureEnabled: false,
-        ...TransitionPresets.SlideFromRightIOS
-    }
     return(
         <NavigationContainer>
-            <Stack.Navigator screenOptions={screenOptionStyle}>
-                <Stack.Screen name="SplashScreen" component={SplashScreen} />
-                <Stack.Screen name="Login"        component={Login} />
-                <Stack.Screen name="Contacts"     component={Contacts} />
-                <Stack.Screen name="AddContact"   component={AddContact} />
-            </Stack.Navigator>
+            <HomeStackNavigator />
         </NavigationContainer>
     )
 }
 
-export default MainNavigator;
+export default MainStackNavigator;

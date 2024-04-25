@@ -12,8 +12,17 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		3F845EAA2DD64805B60DF04E /* Outfit-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8EAE5F8FF0EB4FF7811E6CED /* Outfit-Bold.ttf */; };
+		4A06D3317D8144948837B6FE /* Outfit-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 03DDE266FC9D437B9EC70646 /* Outfit-Light.ttf */; };
+		628151E5EB364A1FBD3E9B17 /* Outfit-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9D432ED1E141470582EDFA3C /* Outfit-Medium.ttf */; };
+		6C70B9C32907402EAD04D57F /* Outfit-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7D7D5178D83C4D94A9A31FD5 /* Outfit-ExtraLight.ttf */; };
+		712A6D4CA3754E24B4E2C4C8 /* Outfit-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9462DBC9A3A34E7696C574E7 /* Outfit-Black.ttf */; };
 		7699B88040F8A987B510C191 /* libPods-ContactsApp-ContactsAppTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-ContactsApp-ContactsAppTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		8B9AAED3576A47AB8BC8EFF9 /* Outfit-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CB6F0718292E487C84070C59 /* Outfit-SemiBold.ttf */; };
+		9AB4FD80B2EE4735806ED030 /* Outfit-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6FE428A183CE485586870B16 /* Outfit-Thin.ttf */; };
+		9D44EADF6D2346F1A4A9A09C /* Outfit-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1A3804248CB44EF2BCF683C3 /* Outfit-Regular.ttf */; };
+		C7F641EFAD2E404D93D96BB8 /* Outfit-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A9C40F4BDD2543518959B5C1 /* Outfit-ExtraBold.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,6 +39,7 @@
 		00E356EE1AD99517003FC87E /* ContactsAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ContactsAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* ContactsAppTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactsAppTests.m; sourceTree = "<group>"; };
+		03DDE266FC9D437B9EC70646 /* Outfit-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Outfit-Light.ttf"; path = "../src/assets/fonts/Outfit-Light.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* ContactsApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ContactsApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = ContactsApp/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = ContactsApp/AppDelegate.mm; sourceTree = "<group>"; };
@@ -37,12 +47,20 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ContactsApp/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ContactsApp/main.m; sourceTree = "<group>"; };
 		19F6CBCC0A4E27FBF8BF4A61 /* libPods-ContactsApp-ContactsAppTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ContactsApp-ContactsAppTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A3804248CB44EF2BCF683C3 /* Outfit-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Outfit-Regular.ttf"; path = "../src/assets/fonts/Outfit-Regular.ttf"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-ContactsApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ContactsApp.debug.xcconfig"; path = "Target Support Files/Pods-ContactsApp/Pods-ContactsApp.debug.xcconfig"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-ContactsApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ContactsApp.release.xcconfig"; path = "Target Support Files/Pods-ContactsApp/Pods-ContactsApp.release.xcconfig"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-ContactsApp-ContactsAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ContactsApp-ContactsAppTests.debug.xcconfig"; path = "Target Support Files/Pods-ContactsApp-ContactsAppTests/Pods-ContactsApp-ContactsAppTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-ContactsApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ContactsApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6FE428A183CE485586870B16 /* Outfit-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Outfit-Thin.ttf"; path = "../src/assets/fonts/Outfit-Thin.ttf"; sourceTree = "<group>"; };
+		7D7D5178D83C4D94A9A31FD5 /* Outfit-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Outfit-ExtraLight.ttf"; path = "../src/assets/fonts/Outfit-ExtraLight.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = ContactsApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-ContactsApp-ContactsAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ContactsApp-ContactsAppTests.release.xcconfig"; path = "Target Support Files/Pods-ContactsApp-ContactsAppTests/Pods-ContactsApp-ContactsAppTests.release.xcconfig"; sourceTree = "<group>"; };
+		8EAE5F8FF0EB4FF7811E6CED /* Outfit-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Outfit-Bold.ttf"; path = "../src/assets/fonts/Outfit-Bold.ttf"; sourceTree = "<group>"; };
+		9462DBC9A3A34E7696C574E7 /* Outfit-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Outfit-Black.ttf"; path = "../src/assets/fonts/Outfit-Black.ttf"; sourceTree = "<group>"; };
+		9D432ED1E141470582EDFA3C /* Outfit-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Outfit-Medium.ttf"; path = "../src/assets/fonts/Outfit-Medium.ttf"; sourceTree = "<group>"; };
+		A9C40F4BDD2543518959B5C1 /* Outfit-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Outfit-ExtraBold.ttf"; path = "../src/assets/fonts/Outfit-ExtraBold.ttf"; sourceTree = "<group>"; };
+		CB6F0718292E487C84070C59 /* Outfit-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Outfit-SemiBold.ttf"; path = "../src/assets/fonts/Outfit-SemiBold.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -106,6 +124,23 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		4D159AE9D00F455EAD292190 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				9462DBC9A3A34E7696C574E7 /* Outfit-Black.ttf */,
+				8EAE5F8FF0EB4FF7811E6CED /* Outfit-Bold.ttf */,
+				A9C40F4BDD2543518959B5C1 /* Outfit-ExtraBold.ttf */,
+				7D7D5178D83C4D94A9A31FD5 /* Outfit-ExtraLight.ttf */,
+				03DDE266FC9D437B9EC70646 /* Outfit-Light.ttf */,
+				9D432ED1E141470582EDFA3C /* Outfit-Medium.ttf */,
+				1A3804248CB44EF2BCF683C3 /* Outfit-Regular.ttf */,
+				CB6F0718292E487C84070C59 /* Outfit-SemiBold.ttf */,
+				6FE428A183CE485586870B16 /* Outfit-Thin.ttf */,
+			);
+			name = Resources;
+			path = "";
+			sourceTree = "<group>";
+		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -122,6 +157,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				4D159AE9D00F455EAD292190 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -243,6 +279,15 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				712A6D4CA3754E24B4E2C4C8 /* Outfit-Black.ttf in Resources */,
+				3F845EAA2DD64805B60DF04E /* Outfit-Bold.ttf in Resources */,
+				C7F641EFAD2E404D93D96BB8 /* Outfit-ExtraBold.ttf in Resources */,
+				6C70B9C32907402EAD04D57F /* Outfit-ExtraLight.ttf in Resources */,
+				4A06D3317D8144948837B6FE /* Outfit-Light.ttf in Resources */,
+				628151E5EB364A1FBD3E9B17 /* Outfit-Medium.ttf in Resources */,
+				9D44EADF6D2346F1A4A9A09C /* Outfit-Regular.ttf in Resources */,
+				8B9AAED3576A47AB8BC8EFF9 /* Outfit-SemiBold.ttf in Resources */,
+				9AB4FD80B2EE4735806ED030 /* Outfit-Thin.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

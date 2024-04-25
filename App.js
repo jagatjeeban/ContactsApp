@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { StatusBar, Platform } from "react-native";
-import MainNavigator from "./src/navigator";
+import Navigator from "./src/navigator";
 import FlashMessage from "react-native-flash-message";
-import { Colors } from "./src/assets/common/constants";
+import { Colors } from "./src/common/constants";
 
 const App = () => {
 
@@ -12,7 +12,7 @@ const App = () => {
     
     return(
         <>
-            <MainNavigator />
+            <Navigator />
             <FlashMessage position={'bottom'} duration={4000} floating={true} />
         </>
     )

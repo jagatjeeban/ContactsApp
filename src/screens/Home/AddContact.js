@@ -137,6 +137,6 @@ const styles = StyleSheet.create({
     backgroundColor:"black", 
     alignItems:'center', 
     justifyContent:'center', 
-    paddingVertical:15
+    paddingVertical:10
   },
 })

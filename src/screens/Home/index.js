@@ -1,7 +1,14 @@
-import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet, BackHandler, FlatList, Alert } from 'react-native'
+import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet, FlatList, Alert, Image } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useIsFocused } from '@react-navigation/native'
+
+//import constants
+import { Colors, FontFamily, Images } from '../../common/constants'
+
+//import svgs
+import SvgPlus from '../../assets/icons/svg/plus.svg';
+import SvgSearch from '../../assets/icons/svg/search.svg';
 
 const Contacts = ({navigation}) => {
 
@@ -64,26 +71,46 @@ const Contacts = ({navigation}) => {
     }
   }, [isFocused]);
 
-  return (
-    <SafeAreaView style={{flex: 1}}>
-      <View style={{flex: 1, margin:20}}>
-        <View style={{width:'100%', flexDirection:'row', justifyContent:'space-between'}}>
-          <Text style={{color:'black', fontSize: 30, marginBottom: 30, fontWeight: 600}}>All Contacts</Text>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={{marginTop:10}}>
-            <Text style={{color:'red', fontSize: 20, fontWeight: 500}}>Log Out</Text>
-          </TouchableOpacity>
+  const Header = () => {
+    return(
+      <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', padding:20}}>
+        <View style={{width:"83%", flexDirection:"row", alignItems:'center', padding: 15, borderRadius: 12, borderWidth:1, borderColor: Colors.Base_Grey, backgroundColor:Colors.Bg_Light}}>
+          <SvgSearch />
+          <Text style={{color: Colors.Base_Medium_Grey, fontSize: 16, fontFamily: FontFamily.OutfitRegular, marginLeft:10}}>Search</Text>
         </View>
-        <FlatList
-          data={contacts}
-          showsVerticalScrollIndicator={false}
-          renderItem={ContactCard}
-          ListEmptyComponent={<View style={{marginTop:'80%', alignItems:'center', justifyContent:"center"}}><Text style={{color:"grey", fontSize:30}}>No Contact found!</Text></View>}
-          ItemSeparatorComponent={<View style={{height: 10}} />}
-        />
-        <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('AddContact')} style={styles.addContactBtn}>
-          <Text style={{color:'white', fontSize: 17, fontWeight: 500}}>+ Add Contact</Text>
-        </TouchableOpacity>
+        <Image source={Images.defaultAvatar} style={{width: 50, height: 50}} />
       </View>
+    )
+  }
+
+  const ContactItem = ({item, index}) => {
+    return(
+      <View style={{flexDirection:"row", alignItems:"center", paddingVertical:10}}>
+        <View style={{marginRight: 20, alignItems:"center"}}>
+          {index === 0? 
+          <Text style={{color: Colors.Base_Medium_Grey, fontSize: 20, fontWeight: 500, fontFamily: FontFamily.OutfitMedium}}>A</Text>
+          : 
+          <View style={{marginRight:15}} />}
+        </View>
+        <Image source={Images.defaultAvatar} style={{width:44, height: 44}} />
+        <Text style={{color: Colors.Base_White, fontSize: 18, fontFamily: FontFamily.OutfitMedium, marginLeft: 20}}>Alex</Text>
+      </View>
+    )
+  }
+
+  return (
+    <SafeAreaView style={styles.safeAreaView}>
+      <Header />
+      <View style={{width:'100%', height:'100%', paddingHorizontal: 20}}>
+        <FlatList
+          data={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]}
+          showsVerticalScrollIndicator={false}
+          renderItem={ContactItem}
+        />
+      </View>
+      <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('AddContact')} style={styles.addContactBtn}>
+        <SvgPlus />
+      </TouchableOpacity>
     </SafeAreaView>
   )
 }
@@ -91,14 +118,17 @@ const Contacts = ({navigation}) => {
 export default Contacts;
 
 const styles = StyleSheet.create({
+  safeAreaView: {
+    flex: 1,
+    backgroundColor: Colors.BgColor
+  },
   addContactBtn: {
     position:"absolute", 
     right:15, 
     bottom:50, 
-    backgroundColor:'black', 
-    paddingVertical:15,
-    paddingHorizontal: 20, 
-    borderRadius:40, 
+    backgroundColor: Colors.Primary_Light, 
+    padding: 17,
+    borderRadius:12, 
     alignItems:'center', 
     justifyContent:'center'
   },
