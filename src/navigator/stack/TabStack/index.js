@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 //import constants
 import { Colors, FontFamily } from "../../../common/constants";
@@ -14,6 +14,7 @@ import SvgActiveFav from '../../../assets/icons/svg/primaryFav.svg';
 //import tab screens
 import Contacts from "../../../screens/Home";
 import AddContact from "../../../screens/Home/AddContact";
+import Favourites from "../../../screens/Favourites";
 
 const Tab = createBottomTabNavigator();
 
@@ -38,7 +39,7 @@ const TabStackNavigator = () => {
                     </View>
                     <Text style={[styles.tabTitle, {color: activeScreen === 'Contacts'? Colors.Primary: Colors.Base_Medium_Grey}]}>Contacts</Text>
                 </TouchableOpacity>
-                <TouchableOpacity activeOpacity={1} onPress={null} style={{alignItems:'center'}}>
+                <TouchableOpacity activeOpacity={1} onPress={navigateToFavourites} style={{alignItems:'center'}}>
                     <View style={[styles.tabIconContainer, {backgroundColor: activeScreen === 'Favourites'? Colors.Primary_Light: null}]}>
                         {activeScreen === 'Favourites'? <SvgActiveFav />: <SvgFavourites />}
                     </View>
@@ -51,7 +52,7 @@ const TabStackNavigator = () => {
     return(
         <Tab.Navigator screenOptions={{headerShown: false}} tabBar={(props) => <TabOption {...props} />}>
             <Tab.Screen name="Contacts" component={Contacts} />
-            {/* <Tab.Screen name="Favourites" component={Favourites} /> */}
+            <Tab.Screen name="Favourites" component={Favourites} />
         </Tab.Navigator>
     )
 }
@@ -69,7 +70,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.Bg_Light, 
         borderWidth: 1,
         borderColor: Colors.Base_Grey,
-        paddingBottom:30,
+        paddingBottom: Platform.OS === 'ios'? 30: 20,
         paddingTop: 20,
         borderTopLeftRadius: 30, 
         borderTopRightRadius: 30,
