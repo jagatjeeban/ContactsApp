@@ -15,7 +15,7 @@ const HomeStackNavigator = () => {
     }
     return(
         <Stack.Navigator screenOptions={screenOptionStyle}>
-            <Stack.Screen name="Contacts"     component={Home} />
+            <Stack.Screen name="Home"     component={TabStackNavigator} />
             <Stack.Screen name="AddContact"   component={AddContact} />
         </Stack.Navigator>
     )

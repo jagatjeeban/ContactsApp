@@ -1,18 +1,26 @@
 import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet, FlatList, Alert, Image } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useIsFocused } from '@react-navigation/native'
+import RBSheet from 'react-native-raw-bottom-sheet'
 
 //import constants
 import { Colors, FontFamily, Images } from '../../common/constants'
 
 //import svgs
-import SvgPlus from '../../assets/icons/svg/plus.svg';
-import SvgSearch from '../../assets/icons/svg/search.svg';
+import SvgPlus       from '../../assets/icons/svg/plus.svg';
+import SvgSearch     from '../../assets/icons/svg/search.svg';
+import SvgActiveUser from '../../assets/icons/svg/activeUser.svg';
+import SvgAddAccount from '../../assets/icons/svg/addAccount.svg';
 
 const Contacts = ({navigation}) => {
 
   const isFocused = useIsFocused();
+
+  //refs
+  const refProfileSheet = useRef();
+
+  //states
   const [ contacts, setContacts ]           = useState([]);
 
   //function to get new contacts
@@ -49,19 +57,42 @@ const Contacts = ({navigation}) => {
     )
   }
 
-  //contact card item component
-  const ContactCard = ({item, index}) => {
+  //logged in user profile component
+  const UserProfileSheet = ({refRBSheet}) => {
     return(
-      <View key={index} style={{width:'100%', flexDirection:'row', alignItems:'center', justifyContent:'space-between', padding: 15, borderRadius: 10, backgroundColor:'black'}}>
-        <View style={{maxWidth:'75%'}}>
-          <Text style={{color:'white', fontSize: 20, fontWeight: 600}}>{item?.name}</Text>
-          <Text style={{color:'white', fontSize: 15, fontWeight: 400}}>{`Email Id: ${item?.emailId}`}</Text>
-          <Text style={{color:'white', fontSize: 15, fontWeight: 400}}>{`Mobile Number: +91-${item?.number}`}</Text>
+      <RBSheet ref={refRBSheet} height={350} customStyles={{draggableIcon: styles.pillsBarStyle, container: styles.bottomSheet}} draggable dragOnContent closeOnPressBack>
+        <View style={{flex: 1, marginHorizontal:20, justifyContent:"space-between"}}>
+          <View>
+            <View style={styles.userInfo}>
+              <View style={{flexDirection:'row', alignItems:'center'}}>
+                <Image source={Images.defaultAvatar} style={{width: 44, height: 44}} />
+                <View style={{marginLeft: 20}}>
+                  <Text style={styles.userName}>Morgan Bill Ford</Text>
+                  <Text style={styles.userEmail}>fordmorganbill@gmail.com</Text>
+                </View>
+              </View>
+              <View style={styles.activeUser}>
+                <SvgActiveUser width={12} height={12} />
+                <Text style={{color: Colors.Primary, fontSize: 12, fontFamily: FontFamily.OutfitRegular, marginLeft:7}}>Active</Text>
+              </View>
+            </View>
+            <View style={styles.lineSeparator} />
+            <View style={styles.userInfo}>
+              <View style={{flexDirection:'row', alignItems:'center'}}>
+                <Image source={Images.defaultAvatar} style={{width: 44, height: 44}} />
+                <View style={{marginLeft: 20}}>
+                  <Text style={styles.userName}>Morgan Bill Ford</Text>
+                  <Text style={styles.userEmail}>fordmorganbill@gmail.com</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+          <TouchableOpacity style={styles.addAccountBtn}>
+            <SvgAddAccount />
+            <Text style={{color: Colors.Base_White, fontSize: 18, fontFamily: FontFamily.OutfitMedium, fontWeight: 500, marginLeft: 10}}>Add Another Account</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity activeOpacity={0.7} onPress={() => deleteAlert(item?.name, index)} style={{backgroundColor:"white", paddingVertical:5, paddingHorizontal:10, borderRadius:6, alignItems:'center', justifyContent:'center'}}>
-          <Text style={{color:'black', fontSize: 15}}>Delete</Text>
-        </TouchableOpacity>
-      </View>
+      </RBSheet>
     )
   }
 
@@ -78,7 +109,9 @@ const Contacts = ({navigation}) => {
           <SvgSearch />
           <Text style={{color: Colors.Base_Medium_Grey, fontSize: 16, fontFamily: FontFamily.OutfitRegular, marginLeft:10}}>Search</Text>
         </View>
-        <Image source={Images.defaultAvatar} style={{width: 50, height: 50}} />
+        <TouchableOpacity activeOpacity={0.7} onPress={() => refProfileSheet?.current?.open()} style={{width: 50, height: 50}}>
+          <Image source={Images.defaultAvatar} style={{width: 50, height: 50}} />
+        </TouchableOpacity>
       </View>
     )
   }
@@ -106,11 +139,13 @@ const Contacts = ({navigation}) => {
           data={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]}
           showsVerticalScrollIndicator={false}
           renderItem={ContactItem}
+          ListFooterComponent={<View style={{height: 200}} />}
         />
       </View>
       <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('AddContact')} style={styles.addContactBtn}>
         <SvgPlus />
       </TouchableOpacity>
+      <UserProfileSheet refRBSheet={refProfileSheet} />
     </SafeAreaView>
   )
 }
@@ -124,12 +159,63 @@ const styles = StyleSheet.create({
   },
   addContactBtn: {
     position:"absolute", 
-    right:15, 
-    bottom:50, 
+    right:20, 
+    bottom:150, 
     backgroundColor: Colors.Primary_Light, 
     padding: 17,
     borderRadius:12, 
     alignItems:'center', 
     justifyContent:'center'
+  },
+  pillsBarStyle: {
+    backgroundColor: Colors.Base_Grey,
+    marginVertical: 20,
+    width: 72,
+  },
+  bottomSheet: {
+    borderTopLeftRadius: 20, 
+    borderTopRightRadius: 20,
+    paddingBottom: 20,
+    backgroundColor: Colors.Bg_Light
+  },
+  userInfo: {
+    flexDirection:'row', 
+    alignItems:'center', 
+    justifyContent:'space-between'
+  },
+  userName: {
+    color: Colors.Base_White, 
+    fontSize: 18, 
+    fontWeight: 500, 
+    fontFamily: FontFamily.OutfitMedium
+  },
+  userEmail: {
+    color: Colors.Base_Medium_Grey, 
+    fontSize: 14, 
+    fontFamily: FontFamily.OutfitRegular, 
+    marginTop:5
+  },
+  activeUser: {
+    backgroundColor: Colors.Primary_Light, 
+    borderRadius:6, 
+    paddingVertical:10, 
+    paddingHorizontal:15, 
+    alignItems:'center', 
+    justifyContent:'center', 
+    flexDirection:'row'
+  },
+  lineSeparator: {
+    height: 1, 
+    backgroundColor: Colors.Base_Grey, 
+    marginVertical:20
+  },
+  addAccountBtn: {
+    flexDirection:"row", 
+    marginBottom:20, 
+    backgroundColor: Colors.Primary, 
+    alignItems:"center", 
+    justifyContent:'center', 
+    borderRadius: 12, 
+    paddingVertical: 15
   },
 })
