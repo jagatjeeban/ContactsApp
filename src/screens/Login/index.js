@@ -5,11 +5,11 @@ import { showMessage } from 'react-native-flash-message';
 import { useIsFocused } from '@react-navigation/native';
 
 //import constants
-import { Colors, FontFamily, Strings } from '../common/constants';
+import { Colors, FontFamily, Strings } from '../../common/constants';
 
 //import svgs
-import SvgGoogleLogo from '../assets/icons/svg/googleLogo.svg';
-import SvgWelcome    from '../assets/images/svg/welcome.svg';
+import SvgGoogleLogo from '../../assets/icons/svg/googleLogo.svg';
+import SvgWelcome    from '../../assets/images/svg/welcome.svg';
 
 const Login = ({navigation}) => {
 
@@ -56,12 +56,12 @@ const Login = ({navigation}) => {
                 <SvgWelcome width={276} height={214} />
             </View>
             <View style={{marginTop: 32, alignItems:'center'}}>
-                <Text style={styles.welcomeToConnect}>Welcome To Connect</Text>
+                <Text style={styles.welcomeToConnect}>{Strings.WelcomeToConnect}</Text>
                 <Text style={styles.appDescription}>{Strings.WelcomeText}</Text>
             </View>
             <TouchableOpacity activeOpacity={1} onPress={() => null} style={styles.loginBtn}>
                 <SvgGoogleLogo />
-                <Text style={styles.loginBtnText}>Continue with Google</Text>
+                <Text style={styles.loginBtnText}>{Strings.ContinueWithGoogle}</Text>
             </TouchableOpacity>
         </View>
     </SafeAreaView>

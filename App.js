@@ -7,7 +7,7 @@ import { Colors } from "./src/common/constants";
 const App = () => {
 
     useEffect(() => {
-        if(Platform.OS === 'android') StatusBar.setBackgroundColor(Colors.Primary);
+        if(Platform.OS === 'android') StatusBar.setBackgroundColor(Colors.BgColor);
     }, []);
     
     return(

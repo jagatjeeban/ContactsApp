@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet, FlatList, Alert, Image } from 'react-native'
+import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet, FlatList, Alert, Image, Platform } from 'react-native'
 import React, { useEffect, useState, useRef } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useIsFocused } from '@react-navigation/native'
@@ -59,37 +59,39 @@ const Contacts = ({navigation}) => {
 
   //logged in user profile component
   const UserProfileSheet = ({refRBSheet}) => {
+
+    const ProfileItem = ({item, index}) => {
+      return(
+        <View style={styles.userInfo}>
+          <View style={{flexDirection:'row', alignItems:'center'}}>
+            <Image source={Images.defaultAvatar} style={{width: 44, height: 44}} />
+            <View style={{marginLeft: 20}}>
+              <Text style={styles.userName}>Morgan Bill Ford</Text>
+              <Text style={styles.userEmail}>fordmorganbill@gmail.com</Text>
+            </View>
+          </View>
+          {index === 0? 
+          <View style={styles.activeUser}>
+            <SvgActiveUser width={12} height={12} />
+            <Text style={{color: Colors.Primary, fontSize: 12, fontFamily: FontFamily.OutfitRegular, marginLeft:7}}>Active</Text>
+          </View>: null}
+        </View>
+      )
+    }
     return(
       <RBSheet ref={refRBSheet} height={350} customStyles={{draggableIcon: styles.pillsBarStyle, container: styles.bottomSheet}} draggable dragOnContent closeOnPressBack>
         <View style={{flex: 1, marginHorizontal:20, justifyContent:"space-between"}}>
           <View>
-            <View style={styles.userInfo}>
-              <View style={{flexDirection:'row', alignItems:'center'}}>
-                <Image source={Images.defaultAvatar} style={{width: 44, height: 44}} />
-                <View style={{marginLeft: 20}}>
-                  <Text style={styles.userName}>Morgan Bill Ford</Text>
-                  <Text style={styles.userEmail}>fordmorganbill@gmail.com</Text>
-                </View>
-              </View>
-              <View style={styles.activeUser}>
-                <SvgActiveUser width={12} height={12} />
-                <Text style={{color: Colors.Primary, fontSize: 12, fontFamily: FontFamily.OutfitRegular, marginLeft:7}}>Active</Text>
-              </View>
-            </View>
-            <View style={styles.lineSeparator} />
-            <View style={styles.userInfo}>
-              <View style={{flexDirection:'row', alignItems:'center'}}>
-                <Image source={Images.defaultAvatar} style={{width: 44, height: 44}} />
-                <View style={{marginLeft: 20}}>
-                  <Text style={styles.userName}>Morgan Bill Ford</Text>
-                  <Text style={styles.userEmail}>fordmorganbill@gmail.com</Text>
-                </View>
-              </View>
-            </View>
+            <FlatList
+              data={[1, 2]}
+              showsVerticalScrollIndicator={false}
+              renderItem={ProfileItem}
+              ItemSeparatorComponent={<View style={styles.lineSeparator} />}
+            />
           </View>
           <TouchableOpacity style={styles.addAccountBtn}>
             <SvgAddAccount />
-            <Text style={{color: Colors.Base_White, fontSize: 18, fontFamily: FontFamily.OutfitMedium, fontWeight: 500, marginLeft: 10}}>Add Another Account</Text>
+            <Text style={{color: Colors.Base_White, fontSize: 18, fontFamily: FontFamily.OutfitMedium, fontWeight: '500', marginLeft: 10}}>Add Another Account</Text>
           </TouchableOpacity>
         </View>
       </RBSheet>
@@ -102,6 +104,7 @@ const Contacts = ({navigation}) => {
     }
   }, [isFocused]);
 
+  //page header component
   const Header = () => {
     return(
       <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', padding:20}}>
@@ -116,12 +119,13 @@ const Contacts = ({navigation}) => {
     )
   }
 
+  //contact item component
   const ContactItem = ({item, index}) => {
     return(
       <View style={{flexDirection:"row", alignItems:"center", paddingVertical:10}}>
         <View style={{marginRight: 20, alignItems:"center"}}>
           {index === 0? 
-          <Text style={{color: Colors.Base_Medium_Grey, fontSize: 20, fontWeight: 500, fontFamily: FontFamily.OutfitMedium}}>A</Text>
+          <Text style={{color: Colors.Base_Medium_Grey, fontSize: 20, fontWeight: '500', fontFamily: FontFamily.OutfitMedium}}>A</Text>
           : 
           <View style={{marginRight:15}} />}
         </View>
@@ -138,9 +142,8 @@ const Contacts = ({navigation}) => {
         <FlatList
           data={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]}
           showsVerticalScrollIndicator={false}
-          ListFooterComponent={<View style={{height: 10}} />}
+          ListFooterComponent={<View style={{height: 130}} />}
           renderItem={ContactItem}
-          ListFooterComponent={<View style={{height: 200}} />}
         />
       </View>
       <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('AddContact')} style={styles.addContactBtn}>
@@ -187,7 +190,7 @@ const styles = StyleSheet.create({
   userName: {
     color: Colors.Base_White, 
     fontSize: 18, 
-    fontWeight: 500, 
+    fontWeight: '500', 
     fontFamily: FontFamily.OutfitMedium
   },
   userEmail: {
