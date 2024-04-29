@@ -1,17 +1,22 @@
 import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet, FlatList, Alert, Image, Platform } from 'react-native'
-import React, { useEffect, useState, useRef } from 'react'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useIsFocused } from '@react-navigation/native'
-import RBSheet from 'react-native-raw-bottom-sheet'
+import React, { useEffect, useState, useRef } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from '@react-navigation/native';
+import RBSheet from 'react-native-raw-bottom-sheet';
 
 //import constants
-import { Colors, FontFamily, Images } from '../../common/constants'
+import { Colors, FontFamily, Images } from '../../common/constants';
 
 //import svgs
 import SvgPlus       from '../../assets/icons/svg/plus.svg';
-import SvgSearch     from '../../assets/icons/svg/search.svg';
 import SvgActiveUser from '../../assets/icons/svg/activeUser.svg';
 import SvgAddAccount from '../../assets/icons/svg/addAccount.svg';
+
+//import components
+import { HomeHeader } from '../../components';
+
+//import custom functions
+import { getUcFirstLetter } from '../../common/helper/customFun';
 
 const Contacts = ({navigation}) => {
 
@@ -20,42 +25,19 @@ const Contacts = ({navigation}) => {
   //refs
   const refProfileSheet = useRef();
 
-  //states
-  const [ contacts, setContacts ]           = useState([]);
-
-  //function to get new contacts
-  const getContacts = async() => {
-    const newContact = await AsyncStorage.getItem('NEW_CONTACT');
-    setContacts(JSON.parse(newContact));
-  }
-
-  //function to delete any contact
-  const deleteContact = async(index) => {
-    let updatedList = [...contacts];
-    updatedList.splice(index, 1);
-    setContacts(updatedList);
-    await AsyncStorage.setItem('NEW_CONTACT', JSON.stringify(updatedList));
-  }
-
-  //function to show alert for delete action
-  const deleteAlert = (name, index) => {
-    Alert.alert(
-      'Delete Contact', 
-      `Are you sure you want to delete ${name}?`,
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Delete',
-          onPress: () => deleteContact(index),
-          style: 'destructive',
-        },
-      ],
-      { cancelable: true }
-    )
-  }
+  const dummyContacts = [
+    {'id': 1, 'name': 'Alex'},
+    {'id': 2, 'name': 'Kirti'},
+    {'id': 3, 'name': 'Jagat'},
+    {'id': 4, 'name': 'Vivek'},
+    {'id': 5, 'name': 'Sk Singh'},
+    {'id': 6, 'name': 'Aman'},
+    {'id': 7, 'name': 'Vishal'},
+    {'id': 8, 'name': 'Akhilesh'},
+    {'id': 9, 'name': 'Jaggu'},
+    {'id': 10, 'name': 'Shariq'},
+    {'id': 11, 'name': 'Vishal Singh'},
+  ];
 
   //logged in user profile component
   const UserProfileSheet = ({refRBSheet}) => {
@@ -72,15 +54,16 @@ const Contacts = ({navigation}) => {
           </View>
           {index === 0? 
           <View style={styles.activeUser}>
-            <SvgActiveUser width={12} height={12} />
-            <Text style={{color: Colors.Primary, fontSize: 12, fontFamily: FontFamily.OutfitRegular, marginLeft:7}}>Active</Text>
+            <SvgActiveUser width={15} height={15} />
+            <Text style={{color: Colors.Primary, fontSize: 15, fontFamily: FontFamily.OutfitRegular, marginLeft:7}}>Active</Text>
           </View>: null}
         </View>
       )
     }
+
     return(
       <RBSheet ref={refRBSheet} height={350} customStyles={{draggableIcon: styles.pillsBarStyle, container: styles.bottomSheet}} draggable dragOnContent closeOnPressBack>
-        <View style={{flex: 1, marginHorizontal:20, justifyContent:"space-between"}}>
+        <View style={styles.bottomSheetContainer}>
           <View>
             <FlatList
               data={[1, 2]}
@@ -89,7 +72,7 @@ const Contacts = ({navigation}) => {
               ItemSeparatorComponent={<View style={styles.lineSeparator} />}
             />
           </View>
-          <TouchableOpacity style={styles.addAccountBtn}>
+          <TouchableOpacity onPress={() => refRBSheet.current.close()} activeOpacity={0.7} style={styles.addAccountBtn}>
             <SvgAddAccount />
             <Text style={{color: Colors.Base_White, fontSize: 18, fontFamily: FontFamily.OutfitMedium, fontWeight: '500', marginLeft: 10}}>Add Another Account</Text>
           </TouchableOpacity>
@@ -98,52 +81,47 @@ const Contacts = ({navigation}) => {
     )
   }
 
-  useEffect(() => {
-    if(isFocused){
-      getContacts();
-    }
-  }, [isFocused]);
-
-  //page header component
-  const Header = () => {
-    return(
-      <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', padding:20}}>
-        <View style={{width:"83%", flexDirection:"row", alignItems:'center', padding: 15, borderRadius: 12, borderWidth:1, borderColor: Colors.Base_Grey, backgroundColor:Colors.Bg_Light}}>
-          <SvgSearch />
-          <Text style={{color: Colors.Base_Medium_Grey, fontSize: 16, fontFamily: FontFamily.OutfitRegular, marginLeft:10}}>Search</Text>
-        </View>
-        <TouchableOpacity activeOpacity={0.7} onPress={() => refProfileSheet?.current?.open()} style={{width: 50, height: 50}}>
-          <Image source={Images.defaultAvatar} style={{width: 50, height: 50}} />
-        </TouchableOpacity>
-      </View>
-    )
-  }
-
   //contact item component
   const ContactItem = ({item, index}) => {
     return(
-      <View style={{flexDirection:"row", alignItems:"center", paddingVertical:10}}>
-        <View style={{marginRight: 20, alignItems:"center"}}>
-          {index === 0? 
-          <Text style={{color: Colors.Base_Medium_Grey, fontSize: 20, fontWeight: '500', fontFamily: FontFamily.OutfitMedium}}>A</Text>
-          : 
-          <View style={{marginRight:15}} />}
-        </View>
+      <TouchableOpacity key={index} activeOpacity={0.7} style={styles.contactItemContainer}>
         <Image source={Images.defaultAvatar} style={{width:44, height: 44}} />
-        <Text style={{color: Colors.Base_White, fontSize: 18, fontFamily: FontFamily.OutfitMedium, marginLeft: 20}}>Alex</Text>
+        <Text style={styles.contactNameText}>{item?.name}</Text>
+      </TouchableOpacity>
+    )
+  }
+
+  //contacts group item component
+  const ContactGroupItem = ({item: letter, index}) => {
+    return(
+      <View key={index} style={{flexDirection:'row'}}>
+        <Text style={styles.contactInitialText}>{letter}</Text>
+        <FlatList
+          data={sortedContacts.filter(contact => getUcFirstLetter(contact?.name) === letter)}
+          showsVerticalScrollIndicator={false}
+          nestedScrollEnabled={true}
+          renderItem={ContactItem}
+        />
       </View>
     )
   }
 
+  //sorted contacts arrays in alphabetical order
+  const sortedContacts = dummyContacts.sort((a, b) => a?.name?.localeCompare(b?.name));
+
+  //extract unique first letters from the sorted contacts array
+  const uniqueLetters = [...new Set(sortedContacts.map(contact => getUcFirstLetter(contact?.name)))];
+
   return (
     <SafeAreaView style={styles.safeAreaView}>
-      <Header />
-      <View style={{flex: 1, paddingHorizontal: 20}}>
+      <HomeHeader clickEvent={() => refProfileSheet.current.open()} />
+      <View style={{paddingHorizontal: 20}}>
         <FlatList
-          data={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]}
+          data={uniqueLetters}
+          nestedScrollEnabled={true}
           showsVerticalScrollIndicator={false}
-          ListFooterComponent={<View style={{height: 130}} />}
-          renderItem={ContactItem}
+          renderItem={ContactGroupItem}
+          ListFooterComponent={<View style={{height: Platform.OS === 'android'? 230: 130}} />}
         />
       </View>
       <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('AddContact')} style={styles.addContactBtn}>
@@ -177,10 +155,12 @@ const styles = StyleSheet.create({
     width: 72,
   },
   bottomSheet: {
-    borderTopLeftRadius: 20, 
-    borderTopRightRadius: 20,
+    borderTopLeftRadius: 30, 
+    borderTopRightRadius: 30,
     paddingBottom: 20,
-    backgroundColor: Colors.Bg_Light
+    backgroundColor: Colors.Bg_Light,
+    borderWidth: 1,
+    borderColor: Colors.Base_Grey
   },
   userInfo: {
     flexDirection:'row', 
@@ -202,7 +182,7 @@ const styles = StyleSheet.create({
   activeUser: {
     backgroundColor: Colors.Primary_Light, 
     borderRadius:6, 
-    paddingVertical:10, 
+    paddingVertical:7, 
     paddingHorizontal:15, 
     alignItems:'center', 
     justifyContent:'center', 
@@ -221,5 +201,31 @@ const styles = StyleSheet.create({
     justifyContent:'center', 
     borderRadius: 12, 
     paddingVertical: 15
+  },
+  bottomSheetContainer: {
+    flex: 1, 
+    marginHorizontal:20, 
+    justifyContent:"space-between",
+  },
+  contactItemContainer: {
+    flexDirection:"row", 
+    alignItems:"center", 
+    paddingVertical:10,
+    width:"100%"
+  },
+  contactNameText: {
+    color: Colors.Base_White, 
+    fontSize: 18, 
+    fontFamily: FontFamily.OutfitRegular, 
+    marginLeft: 20,
+    width:'100%'
+  },
+  contactInitialText: {
+    color: Colors.Base_Medium_Grey, 
+    fontSize: 20, 
+    fontWeight: '500', 
+    fontFamily: FontFamily.OutfitMedium,
+    marginTop: 20,
+    width: 40,
   },
 })

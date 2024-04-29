@@ -4,6 +4,7 @@ import { TextInput } from 'react-native-gesture-handler';
 import { showMessage } from 'react-native-flash-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
+import { Colors } from '../../common/constants';
 
 const AddContact = ({navigation}) => {
 
@@ -67,9 +68,9 @@ const AddContact = ({navigation}) => {
   }, [isFocused]);
 
   return (
-    <SafeAreaView style={{flex: 1}}>
-      <View style={{flex: 1, marginHorizontal:20, marginTop:'10%'}}>
-        <View style={{width:'100%', alignItems:'center', marginBottom:50}}>
+    <SafeAreaView style={{flex: 1, backgroundColor: Colors.BgColor}}>
+      <View style={{flex: 1, marginHorizontal:20}}>
+        {/* <View style={{width:'100%', alignItems:'center', marginBottom:50}}>
           <View style={{width: 150, height: 150, borderRadius:100, backgroundColor:'grey', marginBottom:20}} />
           <Text style={{color:'black', fontSize: 20, fontWeight: 500}}>Add Photo</Text>
         </View>
@@ -103,13 +104,10 @@ const AddContact = ({navigation}) => {
             maxLength={10}
             onChangeText={(e) => addIntoForm(e, 'number')}
           />
-        </View>
-        <View style={{width:'100%', position:'absolute', bottom: 20, flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
-          <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.goBack()} style={[styles.saveContactBtn, {left: 0, backgroundColor:'white', borderWidth:1, borderColor: 'black'}]}>
-            <Text style={{color:'black', fontSize:20, fontWeight: 600}}>Cancel</Text>
-          </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.7} onPress={() => validateForm()} style={[styles.saveContactBtn, {right: 0}]}>
-            <Text style={{color:'white', fontSize:20, fontWeight: 600}}>Save</Text>
+        </View> */}
+        <View style={{width:'100%', position:'absolute', bottom: 20, flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
+          <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.goBack()} style={styles.saveContactBtn}>
+            <Text style={{color:'white', fontSize:20, fontWeight: 600}}>Go Back</Text>
           </TouchableOpacity>
         </View>
       </View>

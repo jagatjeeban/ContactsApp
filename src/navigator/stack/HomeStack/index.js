@@ -3,6 +3,7 @@ import React from "react";
 import TabStackNavigator from "../TabStack";
 import Home from "../../../screens/Home";
 import AddContact from "../../../screens/Home/AddContact";
+import AddFavourites from "../../../screens/Favourites/AddFavourites";
 
 const Stack = createStackNavigator();
 
@@ -15,8 +16,11 @@ const HomeStackNavigator = () => {
     }
     return(
         <Stack.Navigator screenOptions={screenOptionStyle}>
-            <Stack.Screen name="Home"     component={TabStackNavigator} />
-            <Stack.Screen name="AddContact"   component={AddContact} />
+            {/* Contacts screen starts here */}
+            <Stack.Screen name="Home"                   component={TabStackNavigator} />
+            <Stack.Screen name="AddContact"             component={AddContact} />
+            {/* Favourites screen starts here */}
+            <Stack.Screen name="AddFavourites"          component={AddFavourites}/>
         </Stack.Navigator>
     )
 }
