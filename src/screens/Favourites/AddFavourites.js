@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, FlatList, Image } from 'react-native'
+import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, FlatList, Image, Platform, Animated } from 'react-native';
 import React, { useEffect, useState } from 'react';
 
 //import constants
@@ -91,6 +91,15 @@ const AddFavourites = ({navigation}) => {
     }
   }
 
+  //function to handle click on cancel button
+  const handleClickOnCancel = () => {
+    let updatedList = [...filteredContacts];
+    updatedList.forEach(item => {
+      if(item.isSelected) delete item?.isSelected;
+    });
+    setFilteredContacts(updatedList);
+  }
+
   return (
     <SafeAreaView style={styles.safeAreaView}>
         <PageHeader headerTitle={'Select Contacts'} backBtn iconArr={['search']} placeholder='Search Contacts' searchEvent={(val) => searchEvent(val)} navigation={navigation} />
@@ -101,6 +110,15 @@ const AddFavourites = ({navigation}) => {
                 renderItem={ContactGroupItem}
             />
         </View>
+        {filteredContacts.some(item => item.isSelected && item.isSelected === true)? 
+        <Animated.View style={styles.buttonContainer}>
+          <TouchableOpacity activeOpacity={0.7} onPress={() => handleClickOnCancel()} style={styles.actionBtn}>
+            <Text style={styles.actionBtnText}>Cancel</Text>
+          </TouchableOpacity>
+          <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.goBack()} style={[styles.actionBtn, {backgroundColor: Colors.Primary}]}>
+            <Text style={[styles.actionBtnText, {color: Colors.Base_White}]}>Done</Text>
+          </TouchableOpacity>
+        </Animated.View>: null}
     </SafeAreaView>
   )
 }
@@ -139,5 +157,34 @@ const styles = StyleSheet.create({
         fontFamily: FontFamily.OutfitMedium,
         marginTop: 20,
         width: 40
+    },
+    buttonContainer: {
+      backgroundColor: Colors.Bg_Light,
+      position:'absolute', 
+      bottom: 0, 
+      width:'100%', 
+      flexDirection:'row', 
+      alignItems:'center', 
+      justifyContent:'space-between', 
+      paddingTop:20, 
+      paddingBottom: Platform.OS === 'ios'? 30: 20,
+      paddingHorizontal: 30, 
+      borderTopLeftRadius: 30, 
+      borderTopRightRadius: 30, 
+      borderWidth: 1, 
+      borderColor: Colors.Base_Grey
+    },
+    actionBtn: {
+      backgroundColor: Colors.Primary_Light, 
+      borderRadius:12, 
+      paddingVertical: 15, 
+      width:'47%', 
+      alignItems:'center', 
+      justifyContent:'center'
+    },
+    actionBtnText: {
+      color: Colors.Primary, 
+      fontSize: 18, 
+      fontFamily: FontFamily.OutfitMedium
     },
 })

@@ -1,5 +1,5 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, BackHandler } from 'react-native';
+import React, { useState, useEffect } from 'react';
 
 //import constants
 import { Images, Colors, FontFamily } from '../common/constants';
@@ -13,13 +13,29 @@ import SvgBackGrey  from '../assets/icons/svg/backArrowGrey.svg';
 const HomeHeader = ({placeholder='Search', clickEvent, searchBlur=null, searchEvent}) => {
   const [ searchInput, setSearchInput ]     = useState('');
   const [ searchStatus, setSearchStatus ]   = useState(false);
+
+  const handleBackPress = () => {
+    if(searchStatus==true){
+        setSearchStatus(false);
+        searchEvent('');
+        setSearchInput('');
+        return true;
+    }
+    return false;
+}
+
+  useEffect(()=>{
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+      return () => backHandler.remove();
+  }, [searchStatus]);
+
   return (
     <View style={[styles.mainContainer, {padding: !searchStatus? 20: null}]}>
         {!searchStatus? 
         <TouchableOpacity activeOpacity={0.7} onPress={() => [setSearchStatus(true)]} style={styles.searchContainer}>
           <View style={{flexDirection:"row", alignItems:"center"}}>
             <SvgSearch />
-            <Text style={styles.searchText}>Search</Text>
+            <Text style={styles.searchText}>Search Contacts</Text>
           </View>
           <TouchableOpacity activeOpacity={0.7} onPress={() => clickEvent? clickEvent(): null} style={{padding:15}}>
             <SvgMenu />

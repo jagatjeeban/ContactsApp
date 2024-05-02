@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, BackHandler } from "react-native";
 
 //import constants
 import { Colors, FontFamily } from "../common/constants";
@@ -12,6 +12,29 @@ import SvgCross     from '../assets/icons/svg/crossGrey.svg';
 
 const NormalHeader = ({navigation, placeholder, backBtn, headerTitle, headerTitleColor, iconArr, customClickEvent, rightBtnClickEvent, searchStatus, updateSearchStatus, searchBlur, textChangeEvent}) => {
     const [ searchInput, setSearchInput ] = useState('');
+    const searchRef = useRef();
+
+    useEffect(() => {
+        if(searchStatus){
+            searchRef.current.focus();
+        }
+    }, [searchStatus]);
+
+    const handleBackPress = () => {
+        if(searchStatus){
+            updateSearchStatus();
+            textChangeEvent('');
+            setSearchInput('');
+            return true;
+        }
+        return false;
+    }
+
+    useEffect(()=>{
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+        return () => backHandler.remove();
+    }, [searchStatus]);
+
     return(
         <View style={styles.body}>
             {!searchStatus? 
@@ -44,6 +67,7 @@ const NormalHeader = ({navigation, placeholder, backBtn, headerTitle, headerTitl
                         <SvgBackGrey />
                     </TouchableOpacity>
                     <TextInput
+                        ref={searchRef}
                         placeholder={placeholder}
                         selectionColor={Colors.Primary}
                         placeholderTextColor={Colors.Base_Medium_Grey}

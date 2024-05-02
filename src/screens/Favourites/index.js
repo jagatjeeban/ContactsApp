@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     addFavouriteBtn: {
       backgroundColor: Colors.Primary_Light, 
       borderRadius:6, 
-      paddingVertical:10, 
+      paddingVertical:7, 
       paddingHorizontal:15, 
       alignItems:'center', 
       justifyContent:'center', 

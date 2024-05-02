@@ -6,6 +6,7 @@ const Colors = {
     Base_White: '#F2F2F2',
     Base_Grey: '#424242',
     Base_Medium_Grey: '#838383',
+    Base_Light_Red: '#3F2C2E',
 }
 
 export default Colors;
