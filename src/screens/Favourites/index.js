@@ -1,5 +1,5 @@
 import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Image, FlatList, ScrollView } from 'react-native'
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 
 //import constants
 import { Colors, FontFamily, Images } from '../../common/constants';
@@ -26,6 +26,8 @@ const Favourites = ({navigation}) => {
     {'id': 11, 'name': 'Vishal Singh'},
   ];
 
+  const [ filteredContacts, setFilteredContacts ] = useState([...dummyContacts]);
+
   //header component
   const Header = () => {
     return(
@@ -39,13 +41,22 @@ const Favourites = ({navigation}) => {
     )
   }
 
+  //function to search contacts
+  const searchEvent = (req) => {
+    if(req === ''){
+      setFilteredContacts(dummyContacts);
+    } else {
+      setFilteredContacts(dummyContacts.filter(item => item?.name?.toLowerCase()?.includes(req?.toLowerCase())));
+    }
+  }
+
   return (
     <SafeAreaView style={styles.safeAreaView}>
-      <HomeHeader refRBSheet={refProfileSheet} />
+      <HomeHeader refRBSheet={refProfileSheet} placeholder='Search Favourites' searchEvent={(val) => searchEvent(val)} />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom: 130}}>
         <Header />
         <View style={styles.favContactsContainer}>
-          {dummyContacts.map((item, index) => {
+          {filteredContacts.map((item, index) => {
             return(
               <View key={index} style={styles.favContactItem}>
                 <Image source={Images.defaultAvatar} style={{width: 70, height: 70}} />

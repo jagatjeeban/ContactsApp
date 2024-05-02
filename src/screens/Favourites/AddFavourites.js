@@ -1,5 +1,5 @@
 import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, FlatList, Image } from 'react-native'
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 //import constants
 import { Colors, FontFamily, Images } from '../../common/constants';
@@ -29,6 +29,19 @@ const AddFavourites = ({navigation}) => {
         {'id': 10, 'name': 'Shariq'},
         {'id': 11, 'name': 'Vishal Singh'},
   ];
+  const [ filteredContacts, setFilteredContacts ]   = useState([...dummyContacts]);
+  const [ sortedContacts, setSortedContacts ]       = useState([]);
+  const [ uniqueLetters, setUniqueLetters ]         = useState([]);
+
+  //function to update the fav contacts list
+  const updateFavContacts = (id, value) => {
+    let updatedList = [...filteredContacts];
+    let prevIndex = updatedList.findIndex(item => item?.id === id);
+    if(prevIndex !== -1){
+      updatedList[prevIndex].isSelected = value;
+      setFilteredContacts(updatedList);
+    }
+  }
 
   //contact item component
   const ContactItem = ({item, index}) => {
@@ -38,8 +51,8 @@ const AddFavourites = ({navigation}) => {
             <Image source={Images.defaultAvatar} style={{width:44, height: 44}} />
             <Text style={styles.contactNameText}>{item?.name}</Text>
         </View>
-        <TouchableOpacity style={{padding: 10}}>
-            <SvgFavourite />
+        <TouchableOpacity onPress={() => updateFavContacts(item.id, !item?.isSelected)} style={{padding: 10}}>
+            {item.isSelected? <SvgPrimaryFav width={20} height={20} />: <SvgFavourite width={20} height={20} />}
         </TouchableOpacity>
       </View>
     )
@@ -60,15 +73,28 @@ const AddFavourites = ({navigation}) => {
   }
 
   //sorted contacts arrays in alphabetical order
-  const sortedContacts = dummyContacts.sort((a, b) => a?.name?.localeCompare(b?.name));
+  useEffect(() => {
+    setSortedContacts(filteredContacts.sort((a, b) => a?.name?.localeCompare(b?.name)));
+  }, [filteredContacts]);
 
   //extract unique first letters from the sorted contacts array
-  const uniqueLetters = [...new Set(sortedContacts.map(contact => getUcFirstLetter(contact?.name)))];
+  useEffect(() => {
+    setUniqueLetters([...new Set(sortedContacts.map(contact => getUcFirstLetter(contact?.name)))]);
+  }, [sortedContacts]);
+
+  //function to search contacts
+  const searchEvent = (req) => {
+    if(req === ''){
+      setFilteredContacts(dummyContacts);
+    } else {
+      setFilteredContacts(dummyContacts.filter(item => item?.name?.toLowerCase()?.includes(req?.toLowerCase())));
+    }
+  }
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
-        <PageHeader headerTitle={'Select Contacts'} backBtn iconArr={['search']} navigation={navigation} />
-        <View style={{marginHorizontal: 20}}>
+        <PageHeader headerTitle={'Select Contacts'} backBtn iconArr={['search']} placeholder='Search Contacts' searchEvent={(val) => searchEvent(val)} navigation={navigation} />
+        <View style={{flex: 1, marginHorizontal: 20}}>
             <FlatList
                 data={uniqueLetters}
                 showsVerticalScrollIndicator={false}

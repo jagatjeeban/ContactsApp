@@ -6,9 +6,12 @@ import { Colors, FontFamily } from "../common/constants";
 
 //import svgs
 import SvgBackArrow from '../assets/icons/svg/backArrow.svg';
+import SvgBackGrey  from '../assets/icons/svg/backArrowGrey.svg';
 import SvgSearch    from '../assets/icons/svg/searchWhite.svg';
+import SvgCross     from '../assets/icons/svg/crossGrey.svg';
 
 const NormalHeader = ({navigation, placeholder, backBtn, headerTitle, headerTitleColor, iconArr, customClickEvent, rightBtnClickEvent, searchStatus, updateSearchStatus, searchBlur, textChangeEvent}) => {
+    const [ searchInput, setSearchInput ] = useState('');
     return(
         <View style={styles.body}>
             {!searchStatus? 
@@ -35,9 +38,27 @@ const NormalHeader = ({navigation, placeholder, backBtn, headerTitle, headerTitl
                 </View>: null}
             </View>
             :
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Text style={{color: Colors.Base_White, fontSize:16, marginLeft:20}}>Go Back</Text>
-            </TouchableOpacity>}
+            <View style={{flex: 1, flexDirection: 'row', alignItems:"center", justifyContent:"space-between", borderBottomWidth: 1, borderColor: Colors.Base_Grey, marginBottom:1}}>
+                <View style={{flexDirection:'row', alignItems:"center", width:"87%"}}>
+                    <TouchableOpacity onPress={() => [updateSearchStatus(), textChangeEvent(''), setSearchInput('')]} style={{padding: 20}}>
+                        <SvgBackGrey />
+                    </TouchableOpacity>
+                    <TextInput
+                        placeholder={placeholder}
+                        selectionColor={Colors.Primary}
+                        placeholderTextColor={Colors.Base_Medium_Grey}
+                        value={searchInput}
+                        autoFocus={true}
+                        style={{color: Colors.Base_White, fontSize: 18, fontFamily: FontFamily.OutfitRegular, paddingVertical:20, width:'85%'}}
+                        onBlur={() => { if(searchBlur) searchBlur() }}
+                        onChange={(e) => [textChangeEvent(e.nativeEvent.text), setSearchInput(e.nativeEvent.text)]}
+                    />
+                </View>
+                {searchInput !== ''? 
+                <TouchableOpacity onPress={() => [textChangeEvent(''), setSearchInput('')]} style={{padding:20}}>
+                    <SvgCross />
+                </TouchableOpacity>: null}
+            </View>}
         </View>
     )
 }
@@ -55,11 +76,8 @@ export default PageHeader;
 
 const styles = StyleSheet.create({
     body: {
-        // paddingVertical: 10,
-        // paddingHorizontal: 20,
         justifyContent: 'space-between',
         flexDirection: 'row',
         alignItems:'center',
-        // backgroundColor:"red"
     },
 })

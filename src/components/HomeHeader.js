@@ -1,5 +1,5 @@
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import React from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
 
 //import constants
 import { Images, Colors, FontFamily } from '../common/constants';
@@ -7,19 +7,46 @@ import { Images, Colors, FontFamily } from '../common/constants';
 //import svgs
 import SvgSearch     from '../assets/icons/svg/search.svg';
 import SvgMenu       from '../assets/icons/svg/menu.svg';
+import SvgCross      from '../assets/icons/svg/crossGrey.svg';
+import SvgBackGrey  from '../assets/icons/svg/backArrowGrey.svg';
 
-const HomeHeader = ({clickEvent, searchEvent=null}) => {
+const HomeHeader = ({placeholder='Search', clickEvent, searchBlur=null, searchEvent}) => {
+  const [ searchInput, setSearchInput ]     = useState('');
+  const [ searchStatus, setSearchStatus ]   = useState(false);
   return (
-    <View style={styles.mainContainer}>
-        <View style={styles.searchContainer}>
+    <View style={[styles.mainContainer, {padding: !searchStatus? 20: null}]}>
+        {!searchStatus? 
+        <TouchableOpacity activeOpacity={0.7} onPress={() => [setSearchStatus(true)]} style={styles.searchContainer}>
           <View style={{flexDirection:"row", alignItems:"center"}}>
             <SvgSearch />
             <Text style={styles.searchText}>Search</Text>
           </View>
-          <TouchableOpacity activeOpacity={1} onPress={() => clickEvent? clickEvent(): null} style={{padding:15}}>
+          <TouchableOpacity activeOpacity={0.7} onPress={() => clickEvent? clickEvent(): null} style={{padding:15}}>
             <SvgMenu />
           </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
+        :
+        <View style={{flex: 1, flexDirection: 'row', alignItems:"center", justifyContent:"space-between", borderBottomWidth: 1, borderColor: Colors.Base_Grey, paddingTop: 13, marginBottom:13}}>
+          <View style={{flexDirection:'row', alignItems:"center", width:"87%"}}>
+              <TouchableOpacity onPress={() => [setSearchStatus(false), searchEvent(''), setSearchInput('')]} style={{padding: 20}}>
+                  <SvgBackGrey />
+              </TouchableOpacity>
+              <TextInput
+                  placeholder={placeholder}
+                  selectionColor={Colors.Primary}
+                  placeholderTextColor={Colors.Base_Medium_Grey}
+                  value={searchInput}
+                  autoFocus={true}
+                  style={{color: Colors.Base_White, fontSize: 18, fontFamily: FontFamily.OutfitRegular, paddingVertical:20, width:'85%'}}
+                  onBlur={() => { if(searchBlur) searchBlur() }}
+                  onChange={(e) => [searchEvent(e.nativeEvent.text), setSearchInput(e.nativeEvent.text)]}
+              />
+          </View>
+          {searchInput !== ''? 
+          <TouchableOpacity onPress={() => [searchEvent(''), setSearchInput('')]} style={{padding:20}}>
+              <SvgCross />
+          </TouchableOpacity>: null}
+        </View>}
     </View>
   )
 }
@@ -31,7 +58,6 @@ const styles = StyleSheet.create({
     flexDirection:'row', 
     alignItems:'center', 
     justifyContent:'space-between', 
-    padding:20
   },
   searchContainer: {
     width:'100%', 

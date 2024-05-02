@@ -39,6 +39,10 @@ const Contacts = ({navigation}) => {
     {'id': 11, 'name': 'Vishal Singh'},
   ];
 
+  const [ filteredContacts, setFilteredContacts ]   = useState([...dummyContacts]);
+  const [ sortedContacts, setSortedContacts ]       = useState([]);
+  const [ uniqueLetters, setUniqueLetters ]         = useState([]);
+
   //logged in user profile component
   const UserProfileSheet = ({refRBSheet}) => {
 
@@ -107,14 +111,27 @@ const Contacts = ({navigation}) => {
   }
 
   //sorted contacts arrays in alphabetical order
-  const sortedContacts = dummyContacts.sort((a, b) => a?.name?.localeCompare(b?.name));
+  useEffect(() => {
+    setSortedContacts(filteredContacts.sort((a, b) => a?.name?.localeCompare(b?.name)));
+  }, [filteredContacts]);
 
   //extract unique first letters from the sorted contacts array
-  const uniqueLetters = [...new Set(sortedContacts.map(contact => getUcFirstLetter(contact?.name)))];
+  useEffect(() => {
+    setUniqueLetters([...new Set(sortedContacts.map(contact => getUcFirstLetter(contact?.name)))]);
+  }, [sortedContacts]);
+
+  //function to search contacts
+  const searchEvent = (req) => {
+    if(req === ''){
+      setFilteredContacts(dummyContacts);
+    } else {
+      setFilteredContacts(dummyContacts.filter(item => item?.name?.toLowerCase()?.includes(req?.toLowerCase())));
+    }
+  }
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
-      <HomeHeader clickEvent={() => refProfileSheet.current.open()} />
+      <HomeHeader clickEvent={() => refProfileSheet.current.open()} placeholder={'Search Contacts'} searchEvent={(val) => searchEvent(val)} />
       <View style={{paddingHorizontal: 20}}>
         <FlatList
           data={uniqueLetters}
