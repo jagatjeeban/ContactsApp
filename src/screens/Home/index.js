@@ -131,7 +131,7 @@ const Contacts = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
-      <HomeHeader clickEvent={() => refProfileSheet.current.open()} placeholder={'Search Contacts'} searchEvent={(val) => searchEvent(val)} />
+      <HomeHeader clickEvent={() => refProfileSheet.current.open()} menuBtn searchEvent={(val) => searchEvent(val)} />
       <View style={{paddingHorizontal: 20}}>
         <FlatList
           data={uniqueLetters}

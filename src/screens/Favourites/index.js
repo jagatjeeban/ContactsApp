@@ -52,7 +52,7 @@ const Favourites = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
-      <HomeHeader refRBSheet={refProfileSheet} placeholder='Search Favourites' searchEvent={(val) => searchEvent(val)} />
+      <HomeHeader refRBSheet={refProfileSheet} searchEvent={(val) => searchEvent(val)} />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom: 130}}>
         <Header />
         <View style={styles.favContactsContainer}>

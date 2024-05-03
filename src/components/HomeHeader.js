@@ -1,5 +1,6 @@
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, BackHandler } from 'react-native';
 import React, { useState, useEffect } from 'react';
+import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
 
 //import constants
 import { Images, Colors, FontFamily } from '../common/constants';
@@ -10,10 +11,12 @@ import SvgMenu       from '../assets/icons/svg/menu.svg';
 import SvgCross      from '../assets/icons/svg/crossGrey.svg';
 import SvgBackGrey  from '../assets/icons/svg/backArrowGrey.svg';
 
-const HomeHeader = ({placeholder='Search', clickEvent, searchBlur=null, searchEvent}) => {
+const HomeHeader = ({placeholder='Search', menuBtn=false, clickEvent, searchBlur=null, searchEvent}) => {
   const [ searchInput, setSearchInput ]     = useState('');
   const [ searchStatus, setSearchStatus ]   = useState(false);
+  const [ menuVisible, setMenuVisible ]     = useState(false);
 
+  //function to handle system backpress
   const handleBackPress = () => {
     if(searchStatus==true){
         setSearchStatus(false);
@@ -22,7 +25,7 @@ const HomeHeader = ({placeholder='Search', clickEvent, searchBlur=null, searchEv
         return true;
     }
     return false;
-}
+  }
 
   useEffect(()=>{
       const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
@@ -32,14 +35,25 @@ const HomeHeader = ({placeholder='Search', clickEvent, searchBlur=null, searchEv
   return (
     <View style={[styles.mainContainer, {padding: !searchStatus? 20: null}]}>
         {!searchStatus? 
-        <TouchableOpacity activeOpacity={0.7} onPress={() => [setSearchStatus(true)]} style={styles.searchContainer}>
+        <TouchableOpacity activeOpacity={0.7} onPress={() => [setSearchStatus(true)]} style={[styles.searchContainer, {paddingVertical: menuBtn? null: 14}]}>
           <View style={{flexDirection:"row", alignItems:"center"}}>
             <SvgSearch />
-            <Text style={styles.searchText}>Search Contacts</Text>
+            <Text style={styles.searchText}>{placeholder}</Text>
           </View>
-          <TouchableOpacity activeOpacity={0.7} onPress={() => clickEvent? clickEvent(): null} style={{padding:15}}>
-            <SvgMenu />
-          </TouchableOpacity>
+          {menuBtn? 
+          <Menu 
+            visible={menuVisible} 
+            onRequestClose={() => setMenuVisible(false)}
+            style={{backgroundColor: Colors.Bg_Light, borderRadius: 10, borderWidth: 1, borderColor: Colors.Base_Grey}}
+            anchor={
+              <TouchableOpacity activeOpacity={0.7} onPress={() => setMenuVisible(true)} style={{padding: 15}}>
+                <SvgMenu />
+              </TouchableOpacity>
+            }
+          >
+            <MenuItem onPress={() => [ setMenuVisible(false), alert('Select clicked') ]} pressColor={null} textStyle={styles.menuItemText} >Select</MenuItem>
+            <MenuItem onPress={() => [ setMenuVisible(false), alert('Select All clicked') ]} pressColor={null} textStyle={styles.menuItemText} >Select all</MenuItem>
+          </Menu>: null}
         </TouchableOpacity>
         :
         <View style={{flex: 1, flexDirection: 'row', alignItems:"center", justifyContent:"space-between", borderBottomWidth: 1, borderColor: Colors.Base_Grey, paddingTop: 13, marginBottom:13}}>
@@ -91,5 +105,10 @@ const styles = StyleSheet.create({
     fontSize: 16, 
     fontFamily: FontFamily.OutfitRegular, 
     marginLeft:10
+  },
+  menuItemText: {
+    color: Colors.Base_White, 
+    fontSize: 14, 
+    fontFamily: FontFamily.OutfitRegular
   },
 })
