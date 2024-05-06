@@ -9,9 +9,9 @@ import { Images, Colors, FontFamily } from '../common/constants';
 import SvgSearch     from '../assets/icons/svg/search.svg';
 import SvgMenu       from '../assets/icons/svg/menu.svg';
 import SvgCross      from '../assets/icons/svg/crossGrey.svg';
-import SvgBackGrey  from '../assets/icons/svg/backArrowGrey.svg';
+import SvgBackGrey   from '../assets/icons/svg/backArrowGrey.svg';
 
-const HomeHeader = ({placeholder='Search', menuBtn=false, clickEvent, searchBlur=null, searchEvent}) => {
+const HomeHeader = ({placeholder='Search', menuBtn=false, selectEvent=null, selectAllEvent=null, searchBlur=null, searchEvent}) => {
   const [ searchInput, setSearchInput ]     = useState('');
   const [ searchStatus, setSearchStatus ]   = useState(false);
   const [ menuVisible, setMenuVisible ]     = useState(false);
@@ -44,15 +44,15 @@ const HomeHeader = ({placeholder='Search', menuBtn=false, clickEvent, searchBlur
           <Menu 
             visible={menuVisible} 
             onRequestClose={() => setMenuVisible(false)}
-            style={{backgroundColor: Colors.Bg_Light, borderRadius: 10, borderWidth: 1, borderColor: Colors.Base_Grey}}
+            style={styles.menuContainer}
             anchor={
               <TouchableOpacity activeOpacity={0.7} onPress={() => setMenuVisible(true)} style={{padding: 15}}>
                 <SvgMenu />
               </TouchableOpacity>
             }
           >
-            <MenuItem onPress={() => [ setMenuVisible(false), alert('Select clicked') ]} pressColor={null} textStyle={styles.menuItemText} >Select</MenuItem>
-            <MenuItem onPress={() => [ setMenuVisible(false), alert('Select All clicked') ]} pressColor={null} textStyle={styles.menuItemText} >Select all</MenuItem>
+            <MenuItem onPress={() => [ setMenuVisible(false), selectEvent? selectEvent(): null ]} pressColor={null} textStyle={styles.menuItemText} >Select</MenuItem>
+            <MenuItem onPress={() => [ setMenuVisible(false), selectAllEvent? selectAllEvent(): null ]} pressColor={null} textStyle={styles.menuItemText} >Select all</MenuItem>
           </Menu>: null}
         </TouchableOpacity>
         :
@@ -110,5 +110,11 @@ const styles = StyleSheet.create({
     color: Colors.Base_White, 
     fontSize: 14, 
     fontFamily: FontFamily.OutfitRegular
+  },
+  menuContainer: {
+    backgroundColor: Colors.Bg_Light, 
+    borderRadius: 10, 
+    borderWidth: 1, 
+    borderColor: Colors.Base_Grey
   },
 })

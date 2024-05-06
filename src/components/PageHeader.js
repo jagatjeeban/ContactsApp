@@ -9,6 +9,10 @@ import SvgBackArrow from '../assets/icons/svg/backArrow.svg';
 import SvgBackGrey  from '../assets/icons/svg/backArrowGrey.svg';
 import SvgSearch    from '../assets/icons/svg/searchWhite.svg';
 import SvgCross     from '../assets/icons/svg/crossGrey.svg';
+import SvgWhiteStar from '../assets/icons/svg/whiteFav.svg';
+import SvgPencil    from '../assets/icons/svg/pencil.svg';
+import SvgShare     from '../assets/icons/svg/shareWhite.svg';
+import SvgTrash     from '../assets/icons/svg/trash.svg';
 
 const NormalHeader = ({navigation, placeholder, backBtn, headerTitle, headerTitleColor, iconArr, customClickEvent, rightBtnClickEvent, searchStatus, updateSearchStatus, searchBlur, textChangeEvent}) => {
     const [ searchInput, setSearchInput ] = useState('');
@@ -55,8 +59,24 @@ const NormalHeader = ({navigation, placeholder, backBtn, headerTitle, headerTitl
                 {iconArr?.length > 0? 
                 <View style={{flexDirection:'row', alignItems:'center'}}>
                     {iconArr.some((item) => item === 'search')?
-                    <TouchableOpacity style={{padding: 20}} onPress={() => updateSearchStatus()}>
-                        <SvgSearch />
+                    <TouchableOpacity style={styles.iconStyle} onPress={() => updateSearchStatus()}>
+                        <SvgSearch width={20} height={20} />
+                    </TouchableOpacity>: null}
+                    {iconArr.some((item) => item === 'whiteStar')?
+                    <TouchableOpacity style={styles.iconStyle} onPress={() => null}>
+                        <SvgWhiteStar width={20} height={20} />
+                    </TouchableOpacity>: null}
+                    {iconArr.some((item) => item === 'pencil')?
+                    <TouchableOpacity style={styles.iconStyle} onPress={() => null}>
+                        <SvgPencil width={20} height={20} />
+                    </TouchableOpacity>: null}
+                    {iconArr.some((item) => item === 'share')?
+                    <TouchableOpacity style={styles.iconStyle} onPress={() => null}>
+                        <SvgShare width={20} height={20} />
+                    </TouchableOpacity>: null}
+                    {iconArr.some((item) => item === 'trash')?
+                    <TouchableOpacity style={styles.iconStyle} onPress={() => null}>
+                        <SvgTrash width={20} height={20} />
                     </TouchableOpacity>: null}
                 </View>: null}
             </View>
@@ -91,7 +111,7 @@ const PageHeader = ({navigation, placeholder='Search', headerType='normalHeader'
     const [ searchStatus, setSearchStatus ] = useState(false);
     return(
         <>
-            { headerType === 'normalHeader'? <NormalHeader navigation={navigation} headerTitle={headerTitle} headerTitleColor={headerTitleColor} placeholder={placeholder} backBtn={backBtn} iconArr={iconArr} customClickEvent={customClickEvent} rightBtnClickEvent={(req) => rightBtnClickEvent(req)} searchStatus={searchStatus} textChangeEvent={(val) => searchEvent(val)} searchBlur={() => {if(searchBlur) searchBlur()}} updateSearchStatus={() => setSearchStatus(!searchStatus)} />: null }
+            { headerType === 'normalHeader'? <NormalHeader navigation={navigation} headerTitle={headerTitle} headerTitleColor={headerTitleColor} placeholder={placeholder} backBtn={backBtn} iconArr={iconArr} customClickEvent={customClickEvent} rightBtnClickEvent={(req) => rightBtnClickEvent(req)} searchStatus={searchStatus} textChangeEvent={(val) => searchEvent? searchEvent(val): null} searchBlur={() => {if(searchBlur) searchBlur()}} updateSearchStatus={() => setSearchStatus(!searchStatus)} />: null }
         </>
     )
 }
@@ -103,5 +123,9 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         flexDirection: 'row',
         alignItems:'center',
+    },
+    iconStyle: {
+        paddingRight: 20, 
+        paddingVertical: 20
     },
 })

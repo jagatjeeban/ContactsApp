@@ -88,7 +88,7 @@ const Contacts = ({navigation}) => {
   //contact item component
   const ContactItem = ({item, index}) => {
     return(
-      <TouchableOpacity key={index} activeOpacity={0.7} style={styles.contactItemContainer}>
+      <TouchableOpacity key={index} activeOpacity={0.7} onPress={() => navigation.navigate('ContactDetails', {name: item?.name})} style={styles.contactItemContainer}>
         <Image source={Images.defaultAvatar} style={{width:44, height: 44}} />
         <Text style={styles.contactNameText}>{item?.name}</Text>
       </TouchableOpacity>
@@ -131,14 +131,14 @@ const Contacts = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
-      <HomeHeader clickEvent={() => refProfileSheet.current.open()} menuBtn searchEvent={(val) => searchEvent(val)} />
+      <HomeHeader clickEvent={() => refProfileSheet.current.open()} menuBtn selectEvent={() => navigation.navigate('SelectContacts', {contacts: sortedContacts, letters: uniqueLetters})} searchEvent={(val) => searchEvent(val)} />
       <View style={{paddingHorizontal: 20}}>
         <FlatList
           data={uniqueLetters}
           nestedScrollEnabled={true}
           showsVerticalScrollIndicator={false}
           renderItem={ContactGroupItem}
-          ListFooterComponent={<View style={{height: Platform.OS === 'android'? 230: 130}} />}
+          ListFooterComponent={<View style={{height: Platform.OS === 'android'? 230: 200}} />}
         />
       </View>
       <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('AddContact')} style={styles.addContactBtn}>
