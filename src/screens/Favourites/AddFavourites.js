@@ -1,5 +1,6 @@
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, FlatList, Image, Platform, Animated } from 'react-native';
+import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, FlatList, Image, Platform } from 'react-native';
 import React, { useEffect, useState } from 'react';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 //import constants
 import { Colors, FontFamily, Images } from '../../common/constants';
@@ -13,8 +14,11 @@ import { getUcFirstLetter } from '../../common/helper/customFun';
 //import svgs
 import SvgFavourite from '../../assets/icons/svg/favourites.svg';
 import SvgPrimaryFav from '../../assets/icons/svg/primaryFav.svg';
+import { useIsFocused } from '@react-navigation/native';
 
 const AddFavourites = ({navigation}) => {
+
+  const isFocused = useIsFocused();
 
   const dummyContacts = [
         {'id': 1, 'name': 'Alex'},
@@ -32,6 +36,16 @@ const AddFavourites = ({navigation}) => {
   const [ filteredContacts, setFilteredContacts ]   = useState([...dummyContacts]);
   const [ sortedContacts, setSortedContacts ]       = useState([]);
   const [ uniqueLetters, setUniqueLetters ]         = useState([]);
+
+  //animated shared value
+  const actionTabY = useSharedValue(120);
+
+  //animated style for the bottom action tab
+  const animatedTabStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{translateY: actionTabY?.value}]
+    }
+  })
 
   //function to update the fav contacts list
   const updateFavContacts = (id, value) => {
@@ -82,6 +96,16 @@ const AddFavourites = ({navigation}) => {
     setUniqueLetters([...new Set(sortedContacts.map(contact => getUcFirstLetter(contact?.name)))]);
   }, [sortedContacts]);
 
+  useEffect(() => {
+    if(isFocused){
+      if(!filteredContacts.some(item => item.isSelected === true)){
+        actionTabY.value = withSpring(120);
+      } else {
+        actionTabY.value = withSpring(0);
+      }
+    }
+  }, [isFocused, filteredContacts]);
+
   //function to search contacts
   const searchEvent = (req) => {
     if(req === ''){
@@ -97,6 +121,7 @@ const AddFavourites = ({navigation}) => {
     updatedList.forEach(item => {
       if(item.isSelected) delete item?.isSelected;
     });
+    actionTabY.value = withSpring(120);
     setFilteredContacts(updatedList);
   }
 
@@ -108,17 +133,17 @@ const AddFavourites = ({navigation}) => {
                 data={uniqueLetters}
                 showsVerticalScrollIndicator={false}
                 renderItem={ContactGroupItem}
+                ListFooterComponent={<View style={{height: 100}} />}
             />
         </View>
-        {filteredContacts.some(item => item.isSelected && item.isSelected === true)? 
-        <Animated.View style={styles.buttonContainer}>
+        <Animated.View style={[styles.buttonContainer, animatedTabStyle]}>
           <TouchableOpacity activeOpacity={0.7} onPress={() => handleClickOnCancel()} style={styles.actionBtn}>
             <Text style={styles.actionBtnText}>Cancel</Text>
           </TouchableOpacity>
           <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.goBack()} style={[styles.actionBtn, {backgroundColor: Colors.Primary}]}>
             <Text style={[styles.actionBtnText, {color: Colors.Base_White}]}>Done</Text>
           </TouchableOpacity>
-        </Animated.View>: null}
+        </Animated.View>
     </SafeAreaView>
   )
 }
