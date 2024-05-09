@@ -65,17 +65,33 @@ const SelectContacts = ({navigation, route}) => {
     )
   }
 
+  //function to get the contacts list
+  const getContactList = () => {
+    let contacts = route?.params?.contacts;
+    if(route?.params?.type === undefined){
+      contacts.forEach(item => {
+        delete item?.isSelected;
+      })
+      setContacts(contacts);
+    } else {
+      contacts.forEach(item => {
+        item.isSelected = true;
+      })
+      setSelectedCount(contacts?.length);
+      setContacts(contacts);
+    }
+  }
+
   useEffect(() => {
     if(isFocused){
-        setContacts(route?.params?.contacts);
+        getContactList();
         setLetters(route?.params?.letters);
-        setSelectedCount(route?.params?.contacts.filter(item => item.isSelected && item?.isSelected === true)?.length);
     }
   }, [isFocused]);
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
-        <PageHeader headerTitle={selectedCount? `${selectedCount} Selected`: 'Select Contacts'} backBtn iconArr={selectedCount? ['trash', 'share']: []} navigation={navigation} />
+        <PageHeader headerTitle={selectedCount? `${selectedCount} selected`: 'Select Contacts'} backBtn iconArr={selectedCount? ['trash', 'share']: []} navigation={navigation} />
         <View style={{paddingHorizontal: 20}}>
             <FlatList
                 data={letters}

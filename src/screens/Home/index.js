@@ -131,7 +131,7 @@ const Contacts = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
-      <HomeHeader clickEvent={() => refProfileSheet.current.open()} menuBtn selectEvent={() => navigation.navigate('SelectContacts', {contacts: sortedContacts, letters: uniqueLetters})} searchEvent={(val) => searchEvent(val)} />
+      <HomeHeader clickEvent={() => refProfileSheet.current.open()} menuBtn selectEvent={() => navigation.navigate('SelectContacts', {contacts: sortedContacts, letters: uniqueLetters})} selectAllEvent={() => navigation.navigate('SelectContacts', {type: 'all', contacts: sortedContacts, letters: uniqueLetters})} searchEvent={(val) => searchEvent(val)} />
       <View style={{paddingHorizontal: 20}}>
         <FlatList
           data={uniqueLetters}

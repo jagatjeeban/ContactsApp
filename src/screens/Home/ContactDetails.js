@@ -1,9 +1,10 @@
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Dimensions, Image, FlatList } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Dimensions, Image, FlatList, ScrollView, Platform } from 'react-native'
+import React, { useRef, useState } from 'react'
 import { useIsFocused } from '@react-navigation/native';
+import RBSheet from 'react-native-raw-bottom-sheet';
 
 //import constants
-import { Colors, FontFamily, Images } from '../../common/constants';
+import { Colors, FontFamily, Images, Strings } from '../../common/constants';
 
 //import system statics
 import { screenDimensions } from '../../common/helper/systemStatic';
@@ -22,11 +23,7 @@ import SvgTrash      from '../../assets/icons/svg/trash.svg';
 
 const ContactDetails = ({navigation, route}) => {
 
-  var contactObj = {
-    'name': '',
-    'emailId': '',
-    'number': ''
-  }
+  const deleteSheetRef = useRef();
 
   const isFocused = useIsFocused();
   const [ actions, setActions ]                 = useState([
@@ -36,6 +33,7 @@ const ContactDetails = ({navigation, route}) => {
                                                   {id: 4, icon: <SvgShare />,   title: 'Share'}
                                                 ]);
 
+  //contact info item component
   const ContactInfoItem = () => {
     return(
       <View style={{flexDirection:'row', alignItems:"center"}}>
@@ -48,42 +46,73 @@ const ContactDetails = ({navigation, route}) => {
     )
   }
 
+  //delete number bottomsheet component
+  const DeleteNumberSheet = ({refRBSheet}) => {
+    return(
+      <RBSheet ref={refRBSheet} height={Platform.OS === 'ios'? 250: 230} customStyles={{container: styles.bottomSheet, draggableIcon: styles.pillsBarStyle}} closeOnPressBack draggable dragOnContent>
+        <View style={styles.deleteTextContainer}>
+          <Text style={styles.deleteText} numberOfLines={null}>{Strings.DeleteNumberText}</Text>
+        </View>
+        <View style={styles.actionBtnContainer}>
+          <TouchableOpacity onPress={() => refRBSheet.current.close()} style={styles.actionBtn}>
+            <Text style={styles.actionBtnText}>No, Keep it!</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.actionBtn, {backgroundColor: Colors.Primary}]}>
+            <Text style={[styles.actionBtnText, {color: Colors.Base_White}]}>Yes, Delete!</Text>
+          </TouchableOpacity>
+        </View>
+      </RBSheet>
+    )
+  }
+
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: Colors.BgColor}}>
-      <View style={{position:'absolute'}}>
+    <SafeAreaView style={styles.safeAreaView}>
+      <View style={styles.upperCurveEffect}>
         <SvgUpperCurve width={screenDimensions?.width} />
       </View>
       <PageHeader backBtn iconArr={['whiteStar', 'pencil']} navigation={navigation} />
-      <View style={{alignItems:'center'}}>
-        <Image source={Images.defaultAvatar1} style={{width: 120, height: 120}}  />
-        <Text style={{color: Colors.Base_White, fontSize: 22, fontFamily: FontFamily.OutfitRegular, marginTop: 20}}>{route?.params?.name}</Text>
-      </View>
-      <View style={styles.actionsContainer}>
-        {actions.map((item, index) => {
+      <FlatList
+        data={[1]}
+        showsVerticalScrollIndicator={false}
+        renderItem={() => {
           return(
-            <TouchableOpacity key={index} activeOpacity={0.7} style={{alignItems:"center"}}>
-              <View style={styles.actionIconContainer}>
-                {item.icon}
+            <View>
+              <View style={{alignItems:'center'}}>
+                <Image source={Images.defaultAvatar1} style={{width: 120, height: 120}}  />
+                <Text style={{color: Colors.Base_White, fontSize: 22, fontFamily: FontFamily.OutfitRegular, marginTop: 20}}>{route?.params?.name}</Text>
               </View>
-              <Text style={styles.actionText}>{item.title}</Text>
-            </TouchableOpacity>
+              <View style={styles.actionsContainer}>
+                {actions.map((item, index) => {
+                  return(
+                    <TouchableOpacity key={index} activeOpacity={0.7} style={{alignItems:"center"}}>
+                      <View style={styles.actionIconContainer}>
+                        {item.icon}
+                      </View>
+                      <Text style={styles.actionText}>{item.title}</Text>
+                    </TouchableOpacity>
+                  )
+                })}
+              </View>
+              <View style={styles.contactInfoContainer}>
+                <Text style={styles.contactInfoText}>Contact Info</Text>
+                <FlatList
+                  data={[1, 2]}
+                  showsVerticalScrollIndicator={false}
+                  renderItem={ContactInfoItem}
+                  ItemSeparatorComponent={<View style={{backgroundColor: Colors.Base_Grey, height:1, marginVertical:15}} />}
+                  keyExtractor={(item, index) => index.toString()}
+                />
+              </View>
+              <TouchableOpacity activeOpacity={0.7} onPress={() => deleteSheetRef.current.open()} style={{flexDirection:'row', alignItems:'center', marginHorizontal: 20, paddingBottom:20}}>
+                <SvgTrash />
+                <Text style={{color: Colors.Base_Red, fontSize: 18, fontFamily: FontFamily.OutfitMedium, marginLeft: 15}}>Delete Number</Text>
+              </TouchableOpacity>
+            </View>
           )
-        })}
-      </View>
-      <View style={styles.contactInfoContainer}>
-        <Text style={styles.contactInfoText}>Contact Info</Text>
-        <FlatList
-          data={[1, 2]}
-          showsVerticalScrollIndicator={false}
-          renderItem={ContactInfoItem}
-          ItemSeparatorComponent={<View style={{backgroundColor: Colors.Base_Grey, height:1, marginVertical:15}} />}
-          keyExtractor={(item, index) => index.toString()}
-        />
-      </View>
-      <TouchableOpacity activeOpacity={0.7} onPress={null} style={{flexDirection:'row', alignItems:'center', marginHorizontal: 20, paddingBottom:20}}>
-        <SvgTrash />
-        <Text style={{color: Colors.Base_Red, fontSize: 18, fontFamily: FontFamily.OutfitMedium, marginLeft: 15}}>Delete Number</Text>
-      </TouchableOpacity>
+        }}
+        keyExtractor={(_, index) => index.toString()}
+      />
+      <DeleteNumberSheet refRBSheet={deleteSheetRef} />
     </SafeAreaView>
   )
 }
@@ -91,6 +120,29 @@ const ContactDetails = ({navigation, route}) => {
 export default ContactDetails;
 
 const styles = StyleSheet.create({
+  safeAreaView: {
+    flex: 1,
+    backgroundColor: Colors.BgColor
+  },
+  upperCurveEffect: {
+    position:'absolute', 
+    top: Platform.OS === 'ios'? -47: -90, 
+    alignSelf:'center'
+  },
+  bottomSheet: {
+    borderTopLeftRadius: 30, 
+    borderTopRightRadius: 30, 
+    borderWidth:1, 
+    borderColor: Colors.Base_Grey,
+    backgroundColor: Colors.Bg_Light
+  },
+  pillsBarStyle: {
+    width: 80, 
+    height:3.5, 
+    marginVertical:20,
+    borderRadius: 40,
+    backgroundColor: Colors.Base_Grey
+  },
   inputContainer: {
     width:'100%', 
     marginTop:20
@@ -117,6 +169,15 @@ const styles = StyleSheet.create({
     borderRadius:40, 
     backgroundColor: Colors.Primary_Light
   },
+  actionBtnContainer: {
+    position:"absolute", 
+    bottom: Platform.OS === 'ios'? 50: 20, 
+    paddingHorizontal: 20, 
+    alignItems:"center", 
+    justifyContent:"space-between", 
+    flexDirection:"row", 
+    width:'100%'
+  },
   actionsContainer: {
     flexDirection:'row', 
     alignItems:"center", 
@@ -141,5 +202,30 @@ const styles = StyleSheet.create({
     fontSize: 16, 
     fontFamily: FontFamily.OutfitRegular, 
     marginBottom: 20
+  },
+  actionBtn: {
+    backgroundColor: Colors.Primary_Light, 
+    borderRadius:12, 
+    paddingVertical: 15, 
+    width:'47%', 
+    alignItems:'center', 
+    justifyContent:'center'
+  },
+  actionBtnText: {
+    color: Colors.Primary, 
+    fontSize: 18, 
+    fontFamily: FontFamily.OutfitMedium
+  },
+  deleteTextContainer: {
+    paddingHorizontal: 20, 
+    alignItems:"center", 
+    justifyContent:"center", 
+    backgroundColor: Colors.Bg_Light
+  },
+  deleteText: {
+    color: Colors.Base_White, 
+    fontSize:18, 
+    fontFamily: FontFamily.OutfitRegular, 
+    textAlign:'center'
   },
 })

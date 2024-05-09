@@ -58,26 +58,31 @@ const NormalHeader = ({navigation, placeholder, backBtn, headerTitle, headerTitl
                 </View>
                 {iconArr?.length > 0? 
                 <View style={{flexDirection:'row', alignItems:'center'}}>
-                    {iconArr.some((item) => item === 'search')?
-                    <TouchableOpacity style={styles.iconStyle} onPress={() => updateSearchStatus()}>
-                        <SvgSearch width={20} height={20} />
-                    </TouchableOpacity>: null}
-                    {iconArr.some((item) => item === 'whiteStar')?
-                    <TouchableOpacity style={styles.iconStyle} onPress={() => null}>
-                        <SvgWhiteStar width={20} height={20} />
-                    </TouchableOpacity>: null}
-                    {iconArr.some((item) => item === 'pencil')?
-                    <TouchableOpacity style={styles.iconStyle} onPress={() => null}>
-                        <SvgPencil width={20} height={20} />
-                    </TouchableOpacity>: null}
-                    {iconArr.some((item) => item === 'share')?
-                    <TouchableOpacity style={styles.iconStyle} onPress={() => null}>
-                        <SvgShare width={20} height={20} />
-                    </TouchableOpacity>: null}
-                    {iconArr.some((item) => item === 'trash')?
-                    <TouchableOpacity style={styles.iconStyle} onPress={() => null}>
-                        <SvgTrash width={20} height={20} />
-                    </TouchableOpacity>: null}
+                    { iconArr.some((item) => item === 'search')?
+                        <TouchableOpacity style={styles.iconStyle} onPress={() => updateSearchStatus()}>
+                            <SvgSearch width={20} height={20} />
+                        </TouchableOpacity>
+                    : null }
+                    { iconArr.some((item) => item === 'whiteStar')?
+                        <TouchableOpacity style={styles.iconStyle} onPress={() => null}>
+                            <SvgWhiteStar width={20} height={20} />
+                        </TouchableOpacity>
+                    : null }
+                    { iconArr.some((item) => item === 'pencil')?
+                        <TouchableOpacity style={styles.iconStyle} onPress={() => null}>
+                            <SvgPencil width={20} height={20} />
+                        </TouchableOpacity>
+                    : null }
+                    { iconArr.some((item) => item === 'share')?
+                        <TouchableOpacity style={styles.iconStyle} onPress={() => null}>
+                            <SvgShare width={20} height={20} />
+                        </TouchableOpacity>
+                    : null }
+                    { iconArr.some((item) => item === 'trash')?
+                        <TouchableOpacity style={styles.iconStyle} onPress={() => null}>
+                            <SvgTrash width={20} height={20} />
+                        </TouchableOpacity>
+                    : null }
                 </View>: null}
             </View>
             :
