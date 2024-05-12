@@ -5,16 +5,17 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, BackHandler } from
 import { Colors, FontFamily } from "../common/constants";
 
 //import svgs
-import SvgBackArrow from '../assets/icons/svg/backArrow.svg';
-import SvgBackGrey  from '../assets/icons/svg/backArrowGrey.svg';
-import SvgSearch    from '../assets/icons/svg/searchWhite.svg';
-import SvgCross     from '../assets/icons/svg/crossGrey.svg';
-import SvgWhiteStar from '../assets/icons/svg/whiteFav.svg';
-import SvgPencil    from '../assets/icons/svg/pencil.svg';
-import SvgShare     from '../assets/icons/svg/shareWhite.svg';
-import SvgTrash     from '../assets/icons/svg/trash.svg';
+import SvgBackArrow       from '../assets/icons/svg/backArrow.svg';
+import SvgBackGrey        from '../assets/icons/svg/backArrowGrey.svg';
+import SvgSearch          from '../assets/icons/svg/searchWhite.svg';
+import SvgCross           from '../assets/icons/svg/crossGrey.svg';
+import SvgCrossWhite      from '../assets/icons/svg/crossWhite.svg';
+import SvgWhiteStar       from '../assets/icons/svg/whiteFav.svg';
+import SvgPencil          from '../assets/icons/svg/pencil.svg';
+import SvgShare           from '../assets/icons/svg/shareWhite.svg';
+import SvgTrash           from '../assets/icons/svg/trash.svg';
 
-const NormalHeader = ({navigation, placeholder, backBtn, headerTitle, headerTitleColor, iconArr, customClickEvent, rightBtnClickEvent, searchStatus, updateSearchStatus, searchBlur, textChangeEvent}) => {
+const NormalHeader = ({navigation, placeholder, backBtn, crossBtn, headerTitle, headerTitleColor, iconArr, customClickEvent, rightBtnClickEvent, searchStatus, updateSearchStatus, searchBlur, textChangeEvent}) => {
     const [ searchInput, setSearchInput ] = useState('');
     const searchRef = useRef();
 
@@ -44,10 +45,10 @@ const NormalHeader = ({navigation, placeholder, backBtn, headerTitle, headerTitl
             {!searchStatus? 
             <View style={{flex: 1, flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
                 <View style={{flexDirection:'row', alignItems:'center', maxWidth:"85%"}}>
-                    {backBtn? 
+                    {backBtn || crossBtn? 
                     <>
                         <TouchableOpacity onPress={() => navigation.goBack()} style={{padding: 20}}>
-                            <SvgBackArrow />
+                            {backBtn? <SvgBackArrow />: crossBtn? <SvgCrossWhite />: null}
                         </TouchableOpacity>
                         <View style={{paddingVertical: 20}}>
                             <Text style={{color: headerTitleColor, fontSize: 20, fontFamily: FontFamily.OutfitMedium}}>{headerTitle}</Text>
@@ -83,10 +84,15 @@ const NormalHeader = ({navigation, placeholder, backBtn, headerTitle, headerTitl
                             <SvgTrash width={20} height={20} />
                         </TouchableOpacity>
                     : null }
+                    {iconArr.some((item) => item === 'saveBtn')? 
+                        <TouchableOpacity activeOpacity={0.7} style={styles.saveBtn} onPress={() => null}>
+                            <Text style={{color: Colors.Base_White, fontSize: 16, fontFamily: FontFamily.OutfitMedium}}>Save</Text>
+                        </TouchableOpacity>
+                    : null}
                 </View>: null}
             </View>
             :
-            <View style={{flex: 1, flexDirection: 'row', alignItems:"center", justifyContent:"space-between", borderBottomWidth: 1, borderColor: Colors.Base_Grey, marginBottom:1}}>
+            <View style={styles.searchInputContainer}>
                 <View style={{flexDirection:'row', alignItems:"center", width:"87%"}}>
                     <TouchableOpacity onPress={() => [updateSearchStatus(), textChangeEvent(''), setSearchInput('')]} style={{padding: 20}}>
                         <SvgBackGrey />
@@ -112,11 +118,11 @@ const NormalHeader = ({navigation, placeholder, backBtn, headerTitle, headerTitl
     )
 }
 
-const PageHeader = ({navigation, placeholder='Search', headerType='normalHeader', headerTitle=null, headerTitleColor=Colors.Base_White, iconArr=[], backBtn=false, customClickEvent=null, rightBtnClickEvent=null, searchBlur=null, searchEvent=null}) => {
+const PageHeader = ({navigation, placeholder='Search', headerType='normalHeader', headerTitle=null, headerTitleColor=Colors.Base_White, iconArr=[], backBtn=false, crossBtn=false, customClickEvent=null, rightBtnClickEvent=null, searchBlur=null, searchEvent=null}) => {
     const [ searchStatus, setSearchStatus ] = useState(false);
     return(
         <>
-            { headerType === 'normalHeader'? <NormalHeader navigation={navigation} headerTitle={headerTitle} headerTitleColor={headerTitleColor} placeholder={placeholder} backBtn={backBtn} iconArr={iconArr} customClickEvent={customClickEvent} rightBtnClickEvent={(req) => rightBtnClickEvent(req)} searchStatus={searchStatus} textChangeEvent={(val) => searchEvent? searchEvent(val): null} searchBlur={() => {if(searchBlur) searchBlur()}} updateSearchStatus={() => setSearchStatus(!searchStatus)} />: null }
+            { headerType === 'normalHeader'? <NormalHeader navigation={navigation} headerTitle={headerTitle} headerTitleColor={headerTitleColor} placeholder={placeholder} backBtn={backBtn} crossBtn={crossBtn} iconArr={iconArr} customClickEvent={customClickEvent} rightBtnClickEvent={(req) => rightBtnClickEvent(req)} searchStatus={searchStatus} textChangeEvent={(val) => searchEvent? searchEvent(val): null} searchBlur={() => {if(searchBlur) searchBlur()}} updateSearchStatus={() => setSearchStatus(!searchStatus)} />: null }
         </>
     )
 }
@@ -132,5 +138,23 @@ const styles = StyleSheet.create({
     iconStyle: {
         paddingRight: 20, 
         paddingVertical: 20
+    },
+    searchInputContainer: {
+        flex: 1, 
+        flexDirection: 'row', 
+        alignItems:"center", 
+        justifyContent:"space-between", 
+        borderBottomWidth: 1, 
+        borderColor: Colors.Base_Grey, 
+        marginBottom:1
+    },
+    saveBtn: {
+        alignItems:'center', 
+        justifyContent:'center', 
+        borderRadius: 12, 
+        paddingVertical:10, 
+        paddingHorizontal:20, 
+        marginRight: 20,
+        backgroundColor: Colors.Primary
     },
 })
