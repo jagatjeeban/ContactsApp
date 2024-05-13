@@ -4,7 +4,7 @@ import { Colors, FontFamily } from "../../common/constants";
 import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown';
 import SvgArrowDown from '../../assets/icons/svg/arrowDown.svg';
 
-export default DropDown = ({ dropDownList, closeDropdown, positionType='absolute', placeholder = null, isEdit=false, clearInput, initialValue, loaderStatus, name = "", errorStatus = "", onRef, onSelectEvent, dropdownController, dataCallApi=null }) => {
+export default DropDown = ({ dropDownList, closeDropdown, placeholder = null, isEdit=false, clearInput, initialValue, loaderStatus, name = "", errorStatus = "", onRef, onSelectEvent, dropdownController}) => {
 
     const [selectedId, setSelectedId] = useState(0);
 
@@ -14,8 +14,8 @@ export default DropDown = ({ dropDownList, closeDropdown, positionType='absolute
                 dropdownController.current = controller;
             }}
             containerStyle={{ marginBottom: -7, fontFamily: FontFamily.OutfitRegular }}
-            position={Platform.OS == 'ios' ? positionType : 'relative'}
-            onChevronPress={() => closeDropdown()}
+            position={'absolute'}
+            onChevronPress={() => closeDropdown? closeDropdown(): null}
             onOpenSuggestionsList={(e) => e ? closeDropdown() : null}
             closeOnSubmit={true}
             closeOnBlur={false}
@@ -32,18 +32,23 @@ export default DropDown = ({ dropDownList, closeDropdown, positionType='absolute
             direction={"down"}
             ref={onRef}
             onBlur={() => { console.log("=============>") }}
-            onClear={() => clearInput == undefined ? null : clearInput()}
+            onClear={() => clearInput? clearInput(): null}
             EmptyResultComponent={<View style={{ padding: 15 }}><Text style={{ fontFamily: FontFamily.OutfitRegular, color: Colors.Base_White, backgroundColor: Colors.Bg_Light }}>No Options</Text></View>}
-            renderItem={(item, text) =>
-                <View style={{ width: '100%', zIndex: 100000 }}>
-                    <Text style={{ fontFamily: FontFamily.OutfitRegular, color: Colors.Base_White, backgroundColor: Colors.Bg_Light, padding: 15 }}>{item.title}</Text>
+            renderItem={(item, index) =>
+                <View style={{zIndex: 1000, borderRadius:12 }}>
+                    <Text style={{ fontFamily: FontFamily.OutfitRegular, color: Colors.Base_White, backgroundColor: Colors.Bg_Light, borderRadius: 12, paddingHorizontal: 15, paddingVertical:12, fontSize: 16 }}>{item.title}</Text>
                 </View>
             }
+            suggestionsListContainerStyle={{backgroundColor: Colors.Bg_Light, borderRadius: 12, width: '40%', marginLeft: 40, marginTop: 20}}
             initialValue={initialValue}
             onSelectItem={(e) => [onSelectEvent(e), setSelectedId(e)]}
             loading={loaderStatus}
             inputContainerStyle={styles.inputContainer}
             dataSet={dropDownList}
+            flatListProps={{
+                style: {borderRadius: 12, borderWidth: 1, borderColor: Colors.Base_Grey},
+                ItemSeparatorComponent: <View />
+            }}
         />
     );
 }

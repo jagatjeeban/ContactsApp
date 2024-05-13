@@ -31,7 +31,6 @@ const AddContact = ({navigation}) => {
                                           ]);
   //function to close the dropdowns
   const closeDropdown = (req) => {
-    console.log('-------> ', JSON.stringify(dropdownController.current))
     req !== 'dropDown1'? dropdownController.current.close(): null
   }
   
@@ -41,7 +40,7 @@ const AddContact = ({navigation}) => {
         <SvgUpperCurve width={screenDimensions?.width} />
       </View>
       <PageHeader headerTitle={'Create Contact'} crossBtn iconArr={['saveBtn']} navigation={navigation} />
-      <KeyboardAwareScrollView>
+      <KeyboardAwareScrollView contentContainerStyle={{paddingBottom: 100}}>
         <TouchableOpacity activeOpacity={1} onPress={() => null} style={{alignSelf:"center", marginTop: 20}}>
           <View style={styles.userPicContainer}>
             <Image source={Images.defaultUserPic} style={{width: 60, height: 73}} />
@@ -52,7 +51,7 @@ const AddContact = ({navigation}) => {
           </View>
         </TouchableOpacity>
         <View style={styles.formContainer}>
-          <View style={styles.width100}>
+          <View style={[styles.width100, {zIndex: 5}]}>
             <Text style={styles.inputTitle}>Name</Text>
             <View style={styles.inputWithIcon}>
               <SvgUser />
@@ -68,7 +67,7 @@ const AddContact = ({navigation}) => {
               </View>
             </View>
           </View>
-          <View style={[styles.width100, {marginTop: 30}]}>
+          <View style={[styles.width100, {marginTop: 30, zIndex: 4}]}>
             <View style={styles.numberTitleContainer}>
                 <Text style={styles.inputTitle}>Phone Number</Text>
                 <TouchableOpacity onPress={() => null} style={{flexDirection:'row', alignItems:"center"}}>
@@ -93,11 +92,11 @@ const AddContact = ({navigation}) => {
               </View>
             </View>
           </View>
-          <View style={[styles.width100, {marginTop: 30}]}>
+          <View style={[styles.width100, {marginTop: 30, zIndex: 3}]}>
             <Text style={styles.inputTitle}>Select Label</Text>
             <DropDown 
               onRef={labelRef}
-              dropDownList={labelList} 
+              dropDownList={labelList}
               placeholder={'Select Label'} 
               dropdownController={dropdownController} 
               onSelectEvent={(e) => null} 
@@ -105,7 +104,7 @@ const AddContact = ({navigation}) => {
               clearInput={() => null} 
             />
           </View>
-          <View style={[styles.width100, {marginTop: 30}]}>
+          <View style={[styles.width100, {marginTop: 30, zIndex: 2}]}>
             <Text style={styles.inputTitle}>Email ID</Text>
             <View style={styles.inputWithIcon}>
               <SvgMail />
