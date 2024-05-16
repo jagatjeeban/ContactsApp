@@ -9,6 +9,9 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 //import constants
 import { Colors, FontFamily, Strings } from '../../common/constants';
 
+//import config file
+import config from '../../common/config';
+
 //import svgs
 import SvgGoogleLogo from '../../assets/icons/svg/googleLogo.svg';
 import SvgWelcome    from '../../assets/images/svg/welcome.svg';
@@ -28,19 +31,26 @@ const Login = ({navigation}) => {
         
             // Create a Google credential with the token
             const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-        
+
+            alert('Successfully signed in');
+            console.log('------> ', JSON.stringify(auth().signInWithCredential(googleCredential)));
+
             // Sign-in the user with the credential
             return auth().signInWithCredential(googleCredential);
         } catch (error) {
-            console.log('SIGN IN ERROR: ', error);
+            console.log('SIGN IN ERROR: ', JSON.stringify(error));
+            showMessage({message: error?.message, type:"danger", icon:'info'})
         }
     }
 
     useEffect(() => {
-        GoogleSignin.configure({
-            'webClientId': '988138767053-72ht4o4psv2c5l1dfgu044ljkivdfv08.apps.googleusercontent.com'
-        })
-    }, []);
+        if(isFocused){
+            GoogleSignin.configure({
+                'webClientId': config.WEB_CLIENT_ID,
+                'scopes': ['https://www.googleapis.com/auth/contacts.readonly']
+            });
+        }
+    }, [isFocused]);
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
@@ -102,7 +112,7 @@ const styles = StyleSheet.create({
     welcomeToConnect: {
         color: Colors.Base_White, 
         fontSize: 30, 
-        fontWeight: 500, 
+        fontWeight: '500', 
         fontFamily: FontFamily.OutfitMedium
     },
     appDescription: {
@@ -114,7 +124,7 @@ const styles = StyleSheet.create({
     loginBtnText: {
         color: Colors.Base_White, 
         fontSize: 18, 
-        fontWeight: 500, 
+        fontWeight: '500', 
         marginLeft: 20, 
         fontFamily: FontFamily.OutfitMedium
     },
