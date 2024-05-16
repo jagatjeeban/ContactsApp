@@ -1,4 +1,4 @@
-package com.contactsapp
+package com.connectapp
 import android.os.Bundle;
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
