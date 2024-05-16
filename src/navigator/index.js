@@ -7,7 +7,7 @@ const MainStackNavigator = () => {
 
     return(
         <NavigationContainer>
-            <HomeStackNavigator />
+            <AuthStackNavigator />
         </NavigationContainer>
     )
 }

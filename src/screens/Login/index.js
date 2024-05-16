@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { showMessage } from 'react-native-flash-message';
 import { useIsFocused } from '@react-navigation/native';
+import auth from '@react-native-firebase/auth';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 //import constants
 import { Colors, FontFamily, Strings } from '../../common/constants';
@@ -15,39 +17,30 @@ const Login = ({navigation}) => {
 
     const isFocused = useIsFocused();
 
-    const [ emailId, setEmailId ]                     = useState('');
-    const [ password, setPassword ]                   = useState('');
-    const [ emailInputColor, setEmailInputColor ]     = useState('black');
-    const [ passInputColor, setPassInputColor ]       = useState('black');
-
-    //function to validate the login form
-    const validateForm = () => {
-        if(emailId === ''){
-            setEmailInputColor('red');
-            showMessage({message: 'Email Id', description:"Please enter email id", type:'danger', icon:'info'});
-        } else if(!emailId.includes('.com') || !emailId.includes('@')){
-            setEmailInputColor('red')
-            showMessage({message: 'Email Id', description:'Please enter valid email id', type:'danger', icon:'danger'});
-        } else if(password === ''){
-            setEmailInputColor('black');
-            setPassInputColor('red')
-            showMessage({message: 'Password', description:"Please enter password", type:'danger', icon:'info'});
-        } else {
-            setPassInputColor('black');
-            saveCredentials();
-        }
-    }
-
-    //function to save the credentials in the async storage
-    const saveCredentials = async() => {
+    //function to sign in using google credentials
+    const onGoogleButtonPress = async() => {
         try {
-            await AsyncStorage.setItem('EMAIL', emailId);
-            await AsyncStorage.setItem('PASSWORD', password);
-            // navigation.navigate('Contacts');
+            // Check if your device supports Google Play
+            await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+
+            // Get the users ID token
+            const { idToken } = await GoogleSignin.signIn();
+        
+            // Create a Google credential with the token
+            const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+        
+            // Sign-in the user with the credential
+            return auth().signInWithCredential(googleCredential);
         } catch (error) {
-            console.log(error);
+            console.log('SIGN IN ERROR: ', error);
         }
     }
+
+    useEffect(() => {
+        GoogleSignin.configure({
+            'webClientId': '988138767053-72ht4o4psv2c5l1dfgu044ljkivdfv08.apps.googleusercontent.com'
+        })
+    }, []);
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
@@ -59,7 +52,7 @@ const Login = ({navigation}) => {
                 <Text style={styles.welcomeToConnect}>{Strings.WelcomeToConnect}</Text>
                 <Text style={styles.appDescription}>{Strings.WelcomeText}</Text>
             </View>
-            <TouchableOpacity activeOpacity={1} onPress={() => null} style={styles.loginBtn}>
+            <TouchableOpacity activeOpacity={1} onPress={() => onGoogleButtonPress()} style={styles.loginBtn}>
                 <SvgGoogleLogo />
                 <Text style={styles.loginBtnText}>{Strings.ContinueWithGoogle}</Text>
             </TouchableOpacity>
