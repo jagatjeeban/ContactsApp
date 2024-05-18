@@ -35,6 +35,7 @@ const Login = ({navigation}) => {
 
             const currentUser = await GoogleSignin.getCurrentUser();
             await AsyncStorage.setItem('CURRENT_USER', JSON.stringify(currentUser));
+            alert('Successfully signed in')
 
             // Sign-in the user with the credential
             return auth().signInWithCredential(googleCredential);
@@ -48,6 +49,7 @@ const Login = ({navigation}) => {
                 showMessage({message: 'Please install or update the play services on your devices to be able to sign in using google!', type:"danger", icon:'info'})
             } else {
                 // some other error happened
+                showMessage({message: 'Sign In failed', description: 'Something wrong happened!', type:"danger", icon:"info"});
                 console.log('SIGN IN ERROR: ', JSON.stringify(error));
             }
         }

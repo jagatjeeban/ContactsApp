@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, DarkTheme } from "@react-navigation/native";
 import AuthStackNavigator from "./stack/AuthStack";
 import HomeStackNavigator from "./stack/HomeStack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -23,7 +23,7 @@ const MainStackNavigator = () => {
     }, []);
 
     return(
-        <NavigationContainer>
+        <NavigationContainer theme={DarkTheme}>
             {isLoggedIn? 
                 <HomeStackNavigator />
             :
