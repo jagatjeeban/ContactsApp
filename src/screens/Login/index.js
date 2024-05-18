@@ -1,10 +1,10 @@
-import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet } from 'react-native'
+import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { showMessage } from 'react-native-flash-message';
 import { useIsFocused } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 
 //import constants
 import { Colors, FontFamily, Strings } from '../../common/constants';
@@ -19,27 +19,37 @@ import SvgWelcome    from '../../assets/images/svg/welcome.svg';
 const Login = ({navigation}) => {
 
     const isFocused = useIsFocused();
+    const [ loaderStatus, setLoaderStatus ] = useState(false);
 
     //function to sign in using google credentials
     const onGoogleButtonPress = async() => {
         try {
             // Check if your device supports Google Play
             await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-
+            
             // Get the users ID token
             const { idToken } = await GoogleSignin.signIn();
         
             // Create a Google credential with the token
             const googleCredential = auth.GoogleAuthProvider.credential(idToken);
 
-            alert('Successfully signed in');
-            console.log('------> ', JSON.stringify(auth().signInWithCredential(googleCredential)));
+            const currentUser = await GoogleSignin.getCurrentUser();
+            await AsyncStorage.setItem('CURRENT_USER', JSON.stringify(currentUser));
 
             // Sign-in the user with the credential
             return auth().signInWithCredential(googleCredential);
         } catch (error) {
-            console.log('SIGN IN ERROR: ', JSON.stringify(error));
-            showMessage({message: error?.message, type:"danger", icon:'info'})
+            if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+                // user cancelled the login flow
+            } else if (error.code === statusCodes.IN_PROGRESS) {
+                // operation (e.g. sign in) is in progress already
+            } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+                // play services not available or outdated
+                showMessage({message: 'Please install or update the play services on your devices to be able to sign in using google!', type:"danger", icon:'info'})
+            } else {
+                // some other error happened
+                console.log('SIGN IN ERROR: ', JSON.stringify(error));
+            }
         }
     }
 
@@ -47,13 +57,18 @@ const Login = ({navigation}) => {
         if(isFocused){
             GoogleSignin.configure({
                 'webClientId': config.WEB_CLIENT_ID,
-                'scopes': ['https://www.googleapis.com/auth/contacts.readonly']
+                // 'scopes': ['https://www.googleapis.com/auth/contacts']
             });
         }
     }, [isFocused]);
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
+        {loaderStatus? 
+        <View style={[styles.mainContainer, {justifyContent:'center'}]}>
+            <ActivityIndicator size={'large'} color={Colors.Primary} />
+        </View>
+        :
         <View style={styles.mainContainer}>
             <View style={{marginTop:'30%'}}>
                 <SvgWelcome width={276} height={214} />
@@ -66,7 +81,7 @@ const Login = ({navigation}) => {
                 <SvgGoogleLogo />
                 <Text style={styles.loginBtnText}>{Strings.ContinueWithGoogle}</Text>
             </TouchableOpacity>
-        </View>
+        </View>}
     </SafeAreaView>
   )
 }
