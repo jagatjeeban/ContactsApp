@@ -1,5 +1,6 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import React from "react";
+import { useSelector } from "react-redux";
 import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 //import constants
@@ -19,6 +20,8 @@ import Accounts from "../../../screens/Accounts";
 const Tab = createBottomTabNavigator();
 
 const TabStackNavigator = () => {
+
+    let userInfo = useSelector((state) => state.name.userInfo);
 
     const TabOption = (props) => {
         let activeScreen = props.state.routeNames[props.state.index];
@@ -47,7 +50,7 @@ const TabStackNavigator = () => {
                     <Text style={[styles.tabTitle, {color: activeScreen === 'Favourites'? Colors.Primary: Colors.Base_Medium_Grey}]}>Favourites</Text>
                 </TouchableOpacity>
                 <TouchableOpacity activeOpacity={1} onPress={navigateToAccounts} style={{alignItems:"center"}}>
-                    <Image source={Images.defaultAvatar} style={{width: 50, height: 50, borderWidth: activeScreen === 'Accounts'? 1.5: 0, borderColor: Colors.Primary, borderRadius:10}} />
+                    <Image source={{uri: userInfo?.user?.photo}} style={{width: 50, height: 50, borderWidth: activeScreen === 'Accounts'? 1.5: 0, borderColor: Colors.Primary, borderRadius:10}} />
                     <Text style={[styles.tabTitle, {color: activeScreen === 'Accounts'? Colors.Primary: Colors.Base_Medium_Grey}]}>Accounts</Text>
                 </TouchableOpacity>
             </View>

@@ -1,6 +1,6 @@
 const FontFamily = {
-    'OutfitRegular': 'Outfit-Regular',
-    'OutfitMedium': 'Outfit-Medium'
+    'OutfitRegular': 'Outfit-Light',
+    'OutfitMedium': 'Outfit-Regular'
 }
 
 export default FontFamily;

@@ -1,6 +1,6 @@
 import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, FlatList, Image, Platform } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
 //import constants
 import { Colors, FontFamily, Images } from '../../common/constants';
@@ -99,9 +99,9 @@ const AddFavourites = ({navigation}) => {
   useEffect(() => {
     if(isFocused){
       if(!filteredContacts.some(item => item.isSelected === true)){
-        actionTabY.value = withSpring(120);
+        actionTabY.value = withTiming(120, { duration: 300 });
       } else {
-        actionTabY.value = withSpring(0);
+        actionTabY.value = withTiming(0, { duration: 300 });
       }
     }
   }, [isFocused, filteredContacts]);
@@ -121,7 +121,7 @@ const AddFavourites = ({navigation}) => {
     updatedList.forEach(item => {
       if(item.isSelected) delete item?.isSelected;
     });
-    actionTabY.value = withSpring(120);
+    actionTabY.value = withTiming(120, { duration: 300 });
     setFilteredContacts(updatedList);
   }
 

@@ -66,10 +66,10 @@ const ContactDetails = ({navigation, route}) => {
   }
 
   useEffect(() => {
-    if(isFocused){
+    if(isFocused && Platform.OS === 'android'){
       StatusBar.setBackgroundColor(Colors.Base_Dark_Black);
+      return () => StatusBar.setBackgroundColor(Colors.BgColor);
     }
-    return () => StatusBar.setBackgroundColor(Colors.BgColor);
   }, [isFocused]);
 
   return (

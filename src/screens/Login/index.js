@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { showMessage } from 'react-native-flash-message';
 import { useIsFocused } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
+import { useDispatch, useSelector } from 'react-redux';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 
 //import constants
@@ -16,13 +17,19 @@ import config from '../../common/config';
 import SvgGoogleLogo from '../../assets/icons/svg/googleLogo.svg';
 import SvgWelcome    from '../../assets/images/svg/welcome.svg';
 
+//import redux actions
+import { loginSuccess } from '../../store/authSlice';
+
 const Login = ({navigation}) => {
 
     const isFocused = useIsFocused();
+    const dispatch = useDispatch();
+
+    //states
     const [ loaderStatus, setLoaderStatus ] = useState(false);
 
     //function to sign in using google credentials
-    const onGoogleButtonPress = async() => {
+    const signIn = async() => {
         try {
             // Check if your device supports Google Play
             await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
@@ -34,8 +41,7 @@ const Login = ({navigation}) => {
             const googleCredential = auth.GoogleAuthProvider.credential(idToken);
 
             const currentUser = await GoogleSignin.getCurrentUser();
-            await AsyncStorage.setItem('CURRENT_USER', JSON.stringify(currentUser));
-            alert('Successfully signed in')
+            dispatch(loginSuccess(currentUser));
 
             // Sign-in the user with the credential
             return auth().signInWithCredential(googleCredential);
@@ -79,7 +85,7 @@ const Login = ({navigation}) => {
                 <Text style={styles.welcomeToConnect}>{Strings.WelcomeToConnect}</Text>
                 <Text style={styles.appDescription}>{Strings.WelcomeText}</Text>
             </View>
-            <TouchableOpacity activeOpacity={1} onPress={() => onGoogleButtonPress()} style={styles.loginBtn}>
+            <TouchableOpacity activeOpacity={1} onPress={() => signIn()} style={styles.loginBtn}>
                 <SvgGoogleLogo />
                 <Text style={styles.loginBtnText}>{Strings.ContinueWithGoogle}</Text>
             </TouchableOpacity>

@@ -1,30 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { NavigationContainer, DarkTheme } from "@react-navigation/native";
 import AuthStackNavigator from "./stack/AuthStack";
 import HomeStackNavigator from "./stack/HomeStack";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useSelector } from "react-redux";
 
 const MainStackNavigator = () => {
 
-    const [ isLoggedIn, setIsLogedIn ] = useState(false);
-
-    //function to get the current user
-    const getCurrentUser = async() => {
-        const currentUser = await AsyncStorage.getItem('CURRENT_USER');
-        if(currentUser && Object.keys(JSON.parse(currentUser))?.length !== 0){
-            setIsLogedIn(true);
-        } else {
-            setIsLogedIn(false);
-        }
-    }
-
-    useEffect(() => {
-        getCurrentUser();
-    }, []);
+    let authStatus = useSelector((state) => state.name.loginStatus);
 
     return(
         <NavigationContainer theme={DarkTheme}>
-            {isLoggedIn? 
+            {authStatus? 
                 <HomeStackNavigator />
             :
                 <AuthStackNavigator />

@@ -37,10 +37,10 @@ const AddContact = ({navigation}) => {
   }
 
   useEffect(() => {
-    if(isFocused){
+    if(isFocused && Platform.OS === 'android'){
       StatusBar.setBackgroundColor(Colors.Base_Dark_Black);
+      return () => StatusBar.setBackgroundColor(Colors.BgColor);
     }
-    return () => StatusBar.setBackgroundColor(Colors.BgColor);
   }, [isFocused]);
   
   return (
@@ -224,7 +224,8 @@ const styles = StyleSheet.create({
     color: Colors.Base_White, 
     borderWidth:1, 
     borderColor: Colors.Base_Grey, 
-    paddingHorizontal: 15
+    paddingHorizontal: 15,
+    paddingVertical: 10
   },
   formContainer: {
     marginHorizontal: 20, 
