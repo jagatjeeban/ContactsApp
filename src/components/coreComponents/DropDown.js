@@ -71,6 +71,7 @@ const styles = StyleSheet.create({
         borderColor: Colors.Base_Grey,
         borderRadius: 12,
         top: -4,
+        padding: Platform.OS === 'android'? 3: null,
     },
     suggestionContainer: {
         backgroundColor: Colors.Bg_Light, 

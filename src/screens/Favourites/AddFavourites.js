@@ -36,6 +36,7 @@ const AddFavourites = ({navigation}) => {
   const [ filteredContacts, setFilteredContacts ]   = useState([...dummyContacts]);
   const [ sortedContacts, setSortedContacts ]       = useState([]);
   const [ uniqueLetters, setUniqueLetters ]         = useState([]);
+  const [ selectedCount, setSelectedCount ]         = useState(null);
 
   //animated shared value
   const actionTabY = useSharedValue(120);
@@ -53,6 +54,7 @@ const AddFavourites = ({navigation}) => {
     let prevIndex = updatedList.findIndex(item => item?.id === id);
     if(prevIndex !== -1){
       updatedList[prevIndex].isSelected = value;
+      setSelectedCount(updatedList.filter(item => item.isSelected && item.isSelected === true)?.length);
       setFilteredContacts(updatedList);
     }
   }
@@ -127,7 +129,7 @@ const AddFavourites = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
-        <PageHeader headerTitle={'Select Contacts'} backBtn iconArr={['search']} placeholder='Search Contacts' searchEvent={(val) => searchEvent(val)} navigation={navigation} />
+        <PageHeader headerTitle={selectedCount? `${selectedCount} selected`: 'Select Contacts'} backBtn iconArr={['search']} placeholder='Search Contacts' searchEvent={(val) => searchEvent(val)} navigation={navigation} />
         <View style={{flex: 1, marginHorizontal: 20}}>
             <FlatList
                 data={uniqueLetters}

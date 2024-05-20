@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "988138767053-lbrodiq8fp7lfes5k9nffaf3kv136mr5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.connectapp",
+            "certificate_hash": "c77e9adc6dca2652afd7e0c5d9bb13d424b4e1c5"
+          }
+        },
+        {
           "client_id": "988138767053-72ht4o4psv2c5l1dfgu044ljkivdfv08.apps.googleusercontent.com",
           "client_type": 3
         }
