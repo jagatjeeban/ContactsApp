@@ -1,56 +1,82 @@
-import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet } from 'react-native'
+import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { showMessage } from 'react-native-flash-message';
 import { useIsFocused } from '@react-navigation/native';
+import auth from '@react-native-firebase/auth';
+import { useDispatch, useSelector } from 'react-redux';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 
 //import constants
 import { Colors, FontFamily, Strings } from '../../common/constants';
+
+//import config file
+import config from '../../common/config';
 
 //import svgs
 import SvgGoogleLogo from '../../assets/icons/svg/googleLogo.svg';
 import SvgWelcome    from '../../assets/images/svg/welcome.svg';
 
+//import redux actions
+import { loginSuccess } from '../../store/authSlice';
+
 const Login = ({navigation}) => {
 
     const isFocused = useIsFocused();
+    const dispatch = useDispatch();
 
-    const [ emailId, setEmailId ]                     = useState('');
-    const [ password, setPassword ]                   = useState('');
-    const [ emailInputColor, setEmailInputColor ]     = useState('black');
-    const [ passInputColor, setPassInputColor ]       = useState('black');
+    //states
+    const [ loaderStatus, setLoaderStatus ] = useState(false);
 
-    //function to validate the login form
-    const validateForm = () => {
-        if(emailId === ''){
-            setEmailInputColor('red');
-            showMessage({message: 'Email Id', description:"Please enter email id", type:'danger', icon:'info'});
-        } else if(!emailId.includes('.com') || !emailId.includes('@')){
-            setEmailInputColor('red')
-            showMessage({message: 'Email Id', description:'Please enter valid email id', type:'danger', icon:'danger'});
-        } else if(password === ''){
-            setEmailInputColor('black');
-            setPassInputColor('red')
-            showMessage({message: 'Password', description:"Please enter password", type:'danger', icon:'info'});
-        } else {
-            setPassInputColor('black');
-            saveCredentials();
-        }
-    }
-
-    //function to save the credentials in the async storage
-    const saveCredentials = async() => {
+    //function to sign in using google credentials
+    const signIn = async() => {
         try {
-            await AsyncStorage.setItem('EMAIL', emailId);
-            await AsyncStorage.setItem('PASSWORD', password);
-            // navigation.navigate('Contacts');
+            // Check if your device supports Google Play
+            await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+            
+            // Get the users ID token
+            const { idToken } = await GoogleSignin.signIn();
+        
+            // Create a Google credential with the token
+            const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+            const currentUser = await GoogleSignin.getCurrentUser();
+            dispatch(loginSuccess(currentUser));
+
+            // Sign-in the user with the credential
+            return auth().signInWithCredential(googleCredential);
         } catch (error) {
-            console.log(error);
+            if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+                // user cancelled the login flow
+            } else if (error.code === statusCodes.IN_PROGRESS) {
+                // operation (e.g. sign in) is in progress already
+            } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+                // play services not available or outdated
+                showMessage({message: 'Please install or update the play services on your devices to be able to sign in using google!', type:"danger", icon:'info'})
+            } else {
+                // some other error happened
+                showMessage({message: 'Sign In failed', description: 'Something wrong happened!', type:"danger", icon:"info"});
+                console.log('SIGN IN ERROR: ', JSON.stringify(error));
+            }
         }
     }
+
+    useEffect(() => {
+        if(isFocused){
+            GoogleSignin.configure({
+                'webClientId': config.WEB_CLIENT_ID,
+                // 'scopes': ['https://www.googleapis.com/auth/contacts']
+            });
+        }
+    }, [isFocused]);
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
+        {loaderStatus? 
+        <View style={[styles.mainContainer, {justifyContent:'center'}]}>
+            <ActivityIndicator size={'large'} color={Colors.Primary} />
+        </View>
+        :
         <View style={styles.mainContainer}>
             <View style={{marginTop:'30%'}}>
                 <SvgWelcome width={276} height={214} />
@@ -59,11 +85,11 @@ const Login = ({navigation}) => {
                 <Text style={styles.welcomeToConnect}>{Strings.WelcomeToConnect}</Text>
                 <Text style={styles.appDescription}>{Strings.WelcomeText}</Text>
             </View>
-            <TouchableOpacity activeOpacity={1} onPress={() => null} style={styles.loginBtn}>
+            <TouchableOpacity activeOpacity={1} onPress={() => signIn()} style={styles.loginBtn}>
                 <SvgGoogleLogo />
                 <Text style={styles.loginBtnText}>{Strings.ContinueWithGoogle}</Text>
             </TouchableOpacity>
-        </View>
+        </View>}
     </SafeAreaView>
   )
 }
@@ -109,7 +135,7 @@ const styles = StyleSheet.create({
     welcomeToConnect: {
         color: Colors.Base_White, 
         fontSize: 30, 
-        fontWeight: 500, 
+        fontWeight: '500', 
         fontFamily: FontFamily.OutfitMedium
     },
     appDescription: {
@@ -121,7 +147,7 @@ const styles = StyleSheet.create({
     loginBtnText: {
         color: Colors.Base_White, 
         fontSize: 18, 
-        fontWeight: 500, 
+        fontWeight: '500', 
         marginLeft: 20, 
         fontFamily: FontFamily.OutfitMedium
     },

@@ -14,6 +14,7 @@ import SvgWhiteStar       from '../assets/icons/svg/whiteFav.svg';
 import SvgPencil          from '../assets/icons/svg/pencil.svg';
 import SvgShare           from '../assets/icons/svg/shareWhite.svg';
 import SvgTrash           from '../assets/icons/svg/trash.svg';
+import SvgAdd             from '../assets/icons/svg/plus.svg';
 
 const NormalHeader = ({navigation, placeholder, backBtn, crossBtn, headerTitle, headerTitleColor, iconArr, customClickEvent, rightBtnClickEvent, searchStatus, updateSearchStatus, searchBlur, textChangeEvent}) => {
     const [ searchInput, setSearchInput ] = useState('');
@@ -89,6 +90,12 @@ const NormalHeader = ({navigation, placeholder, backBtn, crossBtn, headerTitle, 
                             <Text style={{color: Colors.Base_White, fontSize: 16, fontFamily: FontFamily.OutfitMedium}}>Save</Text>
                         </TouchableOpacity>
                     : null}
+                    {iconArr.some((item) => item === 'addBtn')? 
+                        <TouchableOpacity onPress={() => null} activeOpacity={0.7} style={styles.addBtn}>
+                            <SvgAdd width={15} height={15} />
+                            <Text style={styles.addBtnText}>Add</Text>
+                        </TouchableOpacity>
+                    : null}
                 </View>: null}
             </View>
             :
@@ -156,5 +163,21 @@ const styles = StyleSheet.create({
         paddingHorizontal:20, 
         marginRight: 20,
         backgroundColor: Colors.Primary
+    },
+    addBtnText: {
+        color: Colors.Primary, 
+        fontSize: 16, 
+        fontFamily: FontFamily.OutfitMedium, 
+        marginLeft: 10
+    },
+    addBtn: {
+        backgroundColor: Colors.Primary_Light, 
+        borderRadius:6, 
+        paddingVertical:7, 
+        paddingHorizontal:15, 
+        alignItems:'center', 
+        justifyContent:'center', 
+        flexDirection:'row',
+        marginRight: 20
     },
 })

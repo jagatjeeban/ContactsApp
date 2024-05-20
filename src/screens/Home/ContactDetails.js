@@ -1,5 +1,5 @@
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Dimensions, Image, FlatList, ScrollView, Platform } from 'react-native'
-import React, { useRef, useState } from 'react'
+import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, StatusBar, Image, FlatList, Platform } from 'react-native'
+import React, { useRef, useState, useEffect } from 'react'
 import { useIsFocused } from '@react-navigation/native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 
@@ -64,6 +64,13 @@ const ContactDetails = ({navigation, route}) => {
       </RBSheet>
     )
   }
+
+  useEffect(() => {
+    if(isFocused && Platform.OS === 'android'){
+      StatusBar.setBackgroundColor(Colors.Base_Dark_Black);
+      return () => StatusBar.setBackgroundColor(Colors.BgColor);
+    }
+  }, [isFocused]);
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
@@ -165,8 +172,9 @@ const styles = StyleSheet.create({
   actionIconContainer: {
     alignItems:"center", 
     justifyContent:"center", 
-    padding:20, 
-    borderRadius:40, 
+    width: 56,
+    height: 56,
+    borderRadius:60, 
     backgroundColor: Colors.Primary_Light
   },
   actionBtnContainer: {
