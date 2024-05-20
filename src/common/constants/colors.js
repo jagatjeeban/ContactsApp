@@ -8,6 +8,8 @@ const Colors = {
     Base_Medium_Grey: '#838383',
     Base_Light_Red: '#3F2C2E',
     Base_Red: '#EF233C',
+    Base_Black: '#1E1E1E',
+    Base_Dark_Black: '#181818'
 }
 
 export default Colors;

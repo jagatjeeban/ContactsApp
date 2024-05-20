@@ -1,6 +1,6 @@
 import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, FlatList, Image, Platform } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
 //import constants
 import { Colors, FontFamily, Images } from '../../common/constants';
@@ -36,6 +36,7 @@ const AddFavourites = ({navigation}) => {
   const [ filteredContacts, setFilteredContacts ]   = useState([...dummyContacts]);
   const [ sortedContacts, setSortedContacts ]       = useState([]);
   const [ uniqueLetters, setUniqueLetters ]         = useState([]);
+  const [ selectedCount, setSelectedCount ]         = useState(null);
 
   //animated shared value
   const actionTabY = useSharedValue(120);
@@ -53,6 +54,7 @@ const AddFavourites = ({navigation}) => {
     let prevIndex = updatedList.findIndex(item => item?.id === id);
     if(prevIndex !== -1){
       updatedList[prevIndex].isSelected = value;
+      setSelectedCount(updatedList.filter(item => item.isSelected && item.isSelected === true)?.length);
       setFilteredContacts(updatedList);
     }
   }
@@ -99,9 +101,9 @@ const AddFavourites = ({navigation}) => {
   useEffect(() => {
     if(isFocused){
       if(!filteredContacts.some(item => item.isSelected === true)){
-        actionTabY.value = withSpring(120);
+        actionTabY.value = withTiming(120, { duration: 300 });
       } else {
-        actionTabY.value = withSpring(0);
+        actionTabY.value = withTiming(0, { duration: 300 });
       }
     }
   }, [isFocused, filteredContacts]);
@@ -121,13 +123,13 @@ const AddFavourites = ({navigation}) => {
     updatedList.forEach(item => {
       if(item.isSelected) delete item?.isSelected;
     });
-    actionTabY.value = withSpring(120);
+    actionTabY.value = withTiming(120, { duration: 300 });
     setFilteredContacts(updatedList);
   }
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
-        <PageHeader headerTitle={'Select Contacts'} backBtn iconArr={['search']} placeholder='Search Contacts' searchEvent={(val) => searchEvent(val)} navigation={navigation} />
+        <PageHeader headerTitle={selectedCount? `${selectedCount} selected`: 'Select Contacts'} backBtn iconArr={['search']} placeholder='Search Contacts' searchEvent={(val) => searchEvent(val)} navigation={navigation} />
         <View style={{flex: 1, marginHorizontal: 20}}>
             <FlatList
                 data={uniqueLetters}

@@ -1,5 +1,6 @@
-import { View, SafeAreaView, StyleSheet, Platform, TouchableOpacity, Image, Text, TextInput } from 'react-native'
-import React, { useRef, useState } from 'react';
+import { View, SafeAreaView, StyleSheet, Platform, TouchableOpacity, Image, Text, TextInput, StatusBar } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react';
+import { useIsFocused } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 //import constants
@@ -21,6 +22,7 @@ import SvgPlus       from '../../assets/icons/svg/plusWhite.svg';
 
 const AddContact = ({navigation}) => {
 
+  const isFocused = useIsFocused();
   const dropdownController               = useRef(null);
   const labelRef                         = useRef();
   const [ labelList, setLabelList ]      = useState([
@@ -33,6 +35,13 @@ const AddContact = ({navigation}) => {
   const closeDropdown = (req) => {
     req !== 'dropDown1'? dropdownController.current.close(): null
   }
+
+  useEffect(() => {
+    if(isFocused && Platform.OS === 'android'){
+      StatusBar.setBackgroundColor(Colors.Base_Dark_Black);
+      return () => StatusBar.setBackgroundColor(Colors.BgColor);
+    }
+  }, [isFocused]);
   
   return (
     <SafeAreaView style={styles.safeAreaView}>
@@ -40,7 +49,7 @@ const AddContact = ({navigation}) => {
         <SvgUpperCurve width={screenDimensions?.width} />
       </View>
       <PageHeader headerTitle={'Create Contact'} crossBtn iconArr={['saveBtn']} navigation={navigation} />
-      <KeyboardAwareScrollView contentContainerStyle={{paddingBottom: 100}}>
+      <KeyboardAwareScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom: 100}}>
         <TouchableOpacity activeOpacity={1} onPress={() => null} style={{alignSelf:"center", marginTop: 20}}>
           <View style={styles.userPicContainer}>
             <Image source={Images.defaultUserPic} style={{width: 60, height: 73}} />
@@ -215,7 +224,8 @@ const styles = StyleSheet.create({
     color: Colors.Base_White, 
     borderWidth:1, 
     borderColor: Colors.Base_Grey, 
-    padding: 15
+    paddingHorizontal: 15,
+    paddingVertical: 10
   },
   formContainer: {
     marginHorizontal: 20, 
