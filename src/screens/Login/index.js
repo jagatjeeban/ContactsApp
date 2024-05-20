@@ -51,10 +51,8 @@ const Login = ({navigation}) => {
             } else if (error.code === statusCodes.IN_PROGRESS) {
                 // operation (e.g. sign in) is in progress already
             } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-                // play services not available or outdated
                 showMessage({message: 'Please install or update the play services on your devices to be able to sign in using google!', type:"danger", icon:'info'})
             } else {
-                // some other error happened
                 showMessage({message: 'Sign In failed', description: 'Something wrong happened!', type:"danger", icon:"info"});
                 console.log('SIGN IN ERROR: ', JSON.stringify(error));
             }

@@ -49,7 +49,7 @@ const AddContact = ({navigation}) => {
         <SvgUpperCurve width={screenDimensions?.width} />
       </View>
       <PageHeader headerTitle={'Create Contact'} crossBtn iconArr={['saveBtn']} navigation={navigation} />
-      <KeyboardAwareScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom: 100}}>
+      <KeyboardAwareScrollView enableOnAndroid={true} showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom: 100}}>
         <TouchableOpacity activeOpacity={1} onPress={() => null} style={{alignSelf:"center", marginTop: 20}}>
           <View style={styles.userPicContainer}>
             <Image source={Images.defaultUserPic} style={{width: 60, height: 73}} />
