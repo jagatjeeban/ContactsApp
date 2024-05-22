@@ -1,15 +1,14 @@
-import { TransitionPresets, createStackNavigator } from "@react-navigation/stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 import Login from "../../../screens/Login";
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 const AuthStackNavigator = () => {
 
     const screenOptionStyle = {
         headerShown: false,
         gestureEnabled: false,
-        ...TransitionPresets.SlideFromRightIOS
     }
     return(
         <Stack.Navigator screenOptions={screenOptionStyle}>

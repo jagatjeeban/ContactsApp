@@ -1,4 +1,4 @@
-import { TransitionPresets, createStackNavigator } from "@react-navigation/stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 import TabStackNavigator from "../TabStack";
 {/* Contacts screen starts here */}
@@ -8,14 +8,13 @@ import SelectContacts from "../../../screens/Home/SelectContacts";
 {/* Favourites screen starts here */}
 import AddFavourites from "../../../screens/Favourites/AddFavourites";
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 const HomeStackNavigator = () => {
 
     const screenOptionStyle = {
         headerShown: false,
         gestureEnabled: false,
-        ...TransitionPresets.SlideFromRightIOS
     }
     return(
         <Stack.Navigator screenOptions={screenOptionStyle}>
