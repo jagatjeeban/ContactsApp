@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 
 const MainStackNavigator = () => {
 
-    let authStatus = useSelector((state) => state.name.loginStatus);
+    let authStatus = useSelector((state) => state.auth.loginStatus);
 
     return(
         <NavigationContainer theme={DarkTheme}>

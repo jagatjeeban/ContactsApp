@@ -27,6 +27,7 @@ const ContactDetails = ({navigation, route}) => {
   const deleteSheetRef = useRef();
 
   const isFocused = useIsFocused();
+  const [ contactInfo, setContactInfo ]         = useState({});
   const [ actions, setActions ]                 = useState([
                                                   {id: 1, icon: <SvgCall />,    title: 'Call'},
                                                   {id: 2, icon: <SvgMessage />, title: 'Message'},
@@ -35,13 +36,15 @@ const ContactDetails = ({navigation, route}) => {
                                                 ]);
 
   //contact info item component
-  const ContactInfoItem = () => {
+  const ContactInfoItem = ({item, index}) => {
     return(
-      <View style={{flexDirection:'row', alignItems:"center"}}>
-        <SvgCallWhite />
+      <View key={index} style={{flexDirection:'row'}}>
+        <View style={{marginTop:5}}>
+          <SvgCallWhite />
+        </View>
         <View style={{marginLeft: 20}}>
-          <Text style={{color: Colors.Base_White, fontSize: 18, fontFamily: FontFamily.OutfitRegular}}>+91 8114 984 310</Text>
-          <Text style={{color: Colors.Base_Medium_Grey, fontSize: 16, fontFamily: FontFamily.OutfitRegular}}>Mobile</Text>
+          <Text style={styles.mobileNumber}>{item?.number}</Text>
+          <Text style={{color: Colors.Base_Medium_Grey, fontSize: 16, fontFamily: FontFamily.OutfitRegular}}>{item?.label}</Text>
         </View>
       </View>
     )
@@ -73,6 +76,12 @@ const ContactDetails = ({navigation, route}) => {
     }
   }, [isFocused]);
 
+  useEffect(() => {
+    if(isFocused){
+      setContactInfo(route?.params?.info);
+    }
+  }, [isFocused]);
+
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <View style={styles.upperCurveEffect}>
@@ -86,8 +95,8 @@ const ContactDetails = ({navigation, route}) => {
           return(
             <View>
               <View style={{alignItems:'center'}}>
-                <FastImage source={Images.defaultAvatar1} style={{width: 120, height: 120}}  />
-                <Text style={{color: Colors.Base_White, fontSize: 22, fontFamily: FontFamily.OutfitRegular, marginTop: 20}}>{route?.params?.name}</Text>
+                <FastImage source={contactInfo?.thumbnailPath !== ''? {uri: contactInfo?.thumbnailPath}: Images.defaultAvatar1} style={{width: 120, height: 120, borderRadius:30}}  />
+                <Text style={{color: Colors.Base_White, fontSize: 22, fontFamily: FontFamily.OutfitRegular, marginTop: 20}}>{contactInfo?.displayName}</Text>
               </View>
               <View style={styles.actionsContainer}>
                 {actions.map((item, index) => {
@@ -104,11 +113,11 @@ const ContactDetails = ({navigation, route}) => {
               <View style={styles.contactInfoContainer}>
                 <Text style={styles.contactInfoText}>Contact Info</Text>
                 <FlatList
-                  data={[1, 2]}
+                  data={contactInfo?.phoneNumbers}
                   showsVerticalScrollIndicator={false}
                   renderItem={ContactInfoItem}
                   ItemSeparatorComponent={<View style={{backgroundColor: Colors.Base_Grey, height:1, marginVertical:15}} />}
-                  keyExtractor={(item, index) => index.toString()}
+                  keyExtractor={item => item?.id.toString()}
                 />
               </View>
               <TouchableOpacity activeOpacity={0.7} onPress={() => deleteSheetRef.current.open()} style={{flexDirection:'row', alignItems:'center', marginHorizontal: 20, paddingBottom:20}}>
@@ -191,7 +200,7 @@ const styles = StyleSheet.create({
     flexDirection:'row', 
     alignItems:"center", 
     justifyContent:"space-around", 
-    marginTop: 60
+    marginTop: 60,
   },
   actionText: {
     color: Colors.Base_White, 
@@ -236,5 +245,10 @@ const styles = StyleSheet.create({
     fontSize:18, 
     fontFamily: FontFamily.OutfitRegular, 
     textAlign:'center'
+  },
+  mobileNumber: {
+    color: Colors.Base_White, 
+    fontSize: 18, 
+    fontFamily: FontFamily.OutfitRegular
   },
 })

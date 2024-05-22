@@ -1,8 +1,9 @@
-import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet, FlatList, Image, Platform } from 'react-native'
+import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet, FlatList, Image, Platform, PermissionsAndroid } from 'react-native'
 import React, { useEffect, useState, useRef } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import FastImage from 'react-native-fast-image';
+import Contact from 'react-native-contacts';
 
 //import constants
 import { Colors, FontFamily, Images } from '../../common/constants';
@@ -17,29 +18,21 @@ import { HomeHeader } from '../../components';
 
 //import custom functions
 import { getUcFirstLetter } from '../../common/helper/customFun';
+import { useDispatch, useSelector } from 'react-redux';
+import { storeContacts } from '../../store/dashSlice';
 
 const Contacts = ({navigation}) => {
 
   const isFocused = useIsFocused();
+  const dispatch = useDispatch();
+  let dash = useSelector((state) => state.dash);
 
   //refs
   const refProfileSheet = useRef();
 
-  const dummyContacts = [
-    {'id': 1, 'name': 'Alex'},
-    {'id': 2, 'name': 'Kirti'},
-    {'id': 3, 'name': 'Jagat'},
-    {'id': 4, 'name': 'Vivek'},
-    {'id': 5, 'name': 'Sk Singh'},
-    {'id': 6, 'name': 'Aman'},
-    {'id': 7, 'name': 'Vishal'},
-    {'id': 8, 'name': 'Akhilesh'},
-    {'id': 9, 'name': 'Jaggu'},
-    {'id': 10, 'name': 'Shariq'},
-    {'id': 11, 'name': 'Vishal Singh'},
-  ];
-
-  const [ filteredContacts, setFilteredContacts ]   = useState([...dummyContacts]);
+  //states
+  const [ contacts, setContacts ]                   = useState([]);
+  const [ filteredContacts, setFilteredContacts ]   = useState([...dash?.contacts]);
   const [ sortedContacts, setSortedContacts ]       = useState([]);
   const [ uniqueLetters, setUniqueLetters ]         = useState([]);
 
@@ -88,9 +81,9 @@ const Contacts = ({navigation}) => {
   //contact item component
   const ContactItem = ({item, index}) => {
     return(
-      <TouchableOpacity key={index} activeOpacity={0.7} onPress={() => navigation.navigate('ContactDetails', {name: item?.name})} style={styles.contactItemContainer}>
-        <FastImage source={Images.defaultAvatar} style={{width:44, height: 44}} />
-        <Text style={styles.contactNameText}>{item?.name}</Text>
+      <TouchableOpacity key={index} activeOpacity={0.7} onPress={() => navigation.navigate('ContactDetails', {info: dash.contacts.filter(contact => contact?.recordID === item?.recordID)[0]})} style={styles.contactItemContainer}>
+        <FastImage source={item?.thumbnailPath !== ''? {uri: item?.thumbnailPath, priority:'high'}: Images.defaultAvatar} style={{width:44, height: 44, borderRadius: 10}} />
+        <Text style={styles.contactNameText}>{item?.displayName}</Text>
       </TouchableOpacity>
     )
   }
@@ -101,31 +94,75 @@ const Contacts = ({navigation}) => {
       <View key={index} style={{flexDirection:'row'}}>
         <Text style={styles.contactInitialText}>{letter}</Text>
         <FlatList
-          data={sortedContacts.filter(contact => getUcFirstLetter(contact?.name) === letter)}
+          data={sortedContacts.filter(contact => getUcFirstLetter(contact?.displayName) === letter)}
           showsVerticalScrollIndicator={false}
           nestedScrollEnabled={true}
           renderItem={ContactItem}
+          keyExtractor={item => item?.recordID}
         />
       </View>
     )
   }
 
+  //function to get all the contacts
+  const getAllContacts = () => {
+    Contact.getAll()
+      .then((contacts) => {
+        let newList = contacts.filter(item => item?.phoneNumbers?.length > 0);
+        dispatch(storeContacts(newList));
+        let displayList = newList.map(item => {
+          return {
+            recordID: item?.recordID,
+            displayName: item?.displayName,
+            thumbnailPath: item?.thumbnailPath
+          }
+        });
+        setContacts(displayList);
+        setFilteredContacts(displayList);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }
+
+  //function to request permission to read contacts
+  const requestPermission = () => {
+    PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_CONTACTS, {
+      title: 'Connect',
+      message: 'Connect would like to view your contacts',
+      buttonPositive: 'OK',
+      buttonNeutral: 'Not now',
+      buttonNegative: 'Cancel'
+    })
+    .then((res) => {
+      // console.log('Permission: ', res);
+      getAllContacts();
+    })
+    .catch((error) => {
+      console.log('Permission Error: ', error);
+    });
+  }
+
+  useEffect(() => {
+    requestPermission();
+  }, []);
+
   //sorted contacts arrays in alphabetical order
   useEffect(() => {
-    setSortedContacts(filteredContacts.sort((a, b) => a?.name?.localeCompare(b?.name)));
+    setSortedContacts(filteredContacts.sort((a, b) => a?.displayName?.localeCompare(b?.displayName)));
   }, [filteredContacts]);
 
   //extract unique first letters from the sorted contacts array
   useEffect(() => {
-    setUniqueLetters([...new Set(sortedContacts.map(contact => getUcFirstLetter(contact?.name)))]);
+    setUniqueLetters([...new Set(sortedContacts.map(contact => getUcFirstLetter(contact?.displayName)))]);
   }, [sortedContacts]);
 
   //function to search contacts
   const searchEvent = (req) => {
     if(req === ''){
-      setFilteredContacts(dummyContacts);
+      setFilteredContacts(contacts);
     } else {
-      setFilteredContacts(dummyContacts.filter(item => item?.name?.toLowerCase()?.includes(req?.toLowerCase())));
+      setFilteredContacts(contacts.filter(item => item?.displayName?.toLowerCase()?.includes(req?.toLowerCase())));
     }
   }
 
@@ -139,6 +176,7 @@ const Contacts = ({navigation}) => {
           showsVerticalScrollIndicator={false}
           renderItem={ContactGroupItem}
           ListFooterComponent={<View style={{height: Platform.OS === 'android'? 230: 200}} />}
+          keyExtractor={(_, index) => index.toString()}
         />
       </View>
       <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('AddContact')} style={styles.addContactBtn}>

@@ -44,6 +44,8 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>NSContactsUsageDescription</key>
+	<string>This permission is needed for the core functionalities of the app to work properly. e.g. contcts management, contacts creation, edition and deletion.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Outfit-Black.ttf</string>

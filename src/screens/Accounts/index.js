@@ -2,6 +2,7 @@ import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Image, FlatList
 import React, { useEffect } from 'react';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { useDispatch, useSelector } from 'react-redux';
+import { useIsFocused } from '@react-navigation/native';
 
 //import constants
 import { Colors, FontFamily, Images } from '../../common/constants';
@@ -18,13 +19,12 @@ import config from '../../common/config';
 
 //import redux actions
 import { logOutEvent } from '../../store/authSlice';
-import { useIsFocused } from '@react-navigation/native';
 
 const Accounts = () => {
 
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
-  let userInfo = useSelector((state) => state.name.userInfo);
+  let userInfo = useSelector((state) => state.auth.userInfo);
 
   //function to sign out the user
   const signOut = async() => {

@@ -22,7 +22,7 @@ const Tab = createBottomTabNavigator();
 
 const TabStackNavigator = () => {
 
-    let userInfo = useSelector((state) => state.name.userInfo);
+    let userInfo = useSelector((state) => state.auth.userInfo);
 
     const TabOption = (props) => {
         let activeScreen = props.state.routeNames[props.state.index];
