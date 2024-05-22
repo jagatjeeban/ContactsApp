@@ -50,6 +50,7 @@ const Login = ({navigation}) => {
                 // user cancelled the login flow
             } else if (error.code === statusCodes.IN_PROGRESS) {
                 // operation (e.g. sign in) is in progress already
+                showMessage({message: 'Sign In failed', description: 'Something wrong happened! Please try again.', type:"danger", icon:"info"});
             } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
                 showMessage({message: 'Please install or update the play services on your devices to be able to sign in using google!', type:"danger", icon:'info'})
             } else {

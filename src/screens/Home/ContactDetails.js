@@ -1,7 +1,8 @@
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, StatusBar, Image, FlatList, Platform } from 'react-native'
-import React, { useRef, useState, useEffect } from 'react'
+import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, StatusBar, FlatList, Platform } from 'react-native'
+import React, { useRef, useState, useEffect } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import FastImage from 'react-native-fast-image';
 
 //import constants
 import { Colors, FontFamily, Images, Strings } from '../../common/constants';
@@ -85,7 +86,7 @@ const ContactDetails = ({navigation, route}) => {
           return(
             <View>
               <View style={{alignItems:'center'}}>
-                <Image source={Images.defaultAvatar1} style={{width: 120, height: 120}}  />
+                <FastImage source={Images.defaultAvatar1} style={{width: 120, height: 120}}  />
                 <Text style={{color: Colors.Base_White, fontSize: 22, fontFamily: FontFamily.OutfitRegular, marginTop: 20}}>{route?.params?.name}</Text>
               </View>
               <View style={styles.actionsContainer}>

@@ -1,8 +1,8 @@
-import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet, FlatList, Alert, Image, Platform } from 'react-native'
+import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet, FlatList, Image, Platform } from 'react-native'
 import React, { useEffect, useState, useRef } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import FastImage from 'react-native-fast-image';
 
 //import constants
 import { Colors, FontFamily, Images } from '../../common/constants';
@@ -89,7 +89,7 @@ const Contacts = ({navigation}) => {
   const ContactItem = ({item, index}) => {
     return(
       <TouchableOpacity key={index} activeOpacity={0.7} onPress={() => navigation.navigate('ContactDetails', {name: item?.name})} style={styles.contactItemContainer}>
-        <Image source={Images.defaultAvatar} style={{width:44, height: 44}} />
+        <FastImage source={Images.defaultAvatar} style={{width:44, height: 44}} />
         <Text style={styles.contactNameText}>{item?.name}</Text>
       </TouchableOpacity>
     )

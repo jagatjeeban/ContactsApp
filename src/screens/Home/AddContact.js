@@ -1,4 +1,4 @@
-import { View, SafeAreaView, StyleSheet, Platform, TouchableOpacity, Image, Text, TextInput, StatusBar } from 'react-native'
+import { View, SafeAreaView, StyleSheet, Platform, TouchableOpacity, Image, Text, TextInput, StatusBar, ScrollView } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -19,6 +19,7 @@ import SvgUser       from '../../assets/icons/svg/userIcon.svg';
 import SvgCall       from '../../assets/icons/svg/callGrey.svg';
 import SvgMail       from '../../assets/icons/svg/mailGrey.svg';
 import SvgPlus       from '../../assets/icons/svg/plusWhite.svg';
+import { setAdjustPan, setAdjustResize } from 'rn-android-keyboard-adjust';
 
 const AddContact = ({navigation}) => {
 
@@ -42,6 +43,11 @@ const AddContact = ({navigation}) => {
       return () => StatusBar.setBackgroundColor(Colors.BgColor);
     }
   }, [isFocused]);
+
+  useEffect(() => {
+    setAdjustResize();
+    return () => setAdjustPan();
+  }, []);
   
   return (
     <SafeAreaView style={styles.safeAreaView}>
@@ -49,7 +55,7 @@ const AddContact = ({navigation}) => {
         <SvgUpperCurve width={screenDimensions?.width} />
       </View>
       <PageHeader headerTitle={'Create Contact'} crossBtn iconArr={['saveBtn']} navigation={navigation} />
-      <KeyboardAwareScrollView enableOnAndroid={true} showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom: 100}}>
+      <KeyboardAwareScrollView enableOnAndroid={false} showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom: 100}}>
         <TouchableOpacity activeOpacity={1} onPress={() => null} style={{alignSelf:"center", marginTop: 20}}>
           <View style={styles.userPicContainer}>
             <Image source={Images.defaultUserPic} style={{width: 60, height: 73}} />
@@ -95,7 +101,7 @@ const AddContact = ({navigation}) => {
                   selectionColor={Colors.Primary}
                   placeholderTextColor={Colors.Base_Medium_Grey}
                   style={styles.inputContainer}
-                  keyboardType={'number-pad'}
+                  keyboardType={'phone-pad'}
                   onChangeText={(e) => null}
                 />
               </View>

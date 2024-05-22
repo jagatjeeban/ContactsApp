@@ -78,6 +78,6 @@ const styles = StyleSheet.create({
         borderRadius: 12, 
         width: 160, 
         marginLeft: 40, 
-        marginTop: 10
+        marginTop: 15
     },
 });

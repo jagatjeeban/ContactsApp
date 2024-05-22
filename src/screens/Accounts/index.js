@@ -1,5 +1,5 @@
 import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Image, FlatList } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -13,20 +13,30 @@ import SvgLock   from '../../assets/icons/svg/lock.svg';
 //import components
 import { PageHeader } from '../../components';
 
+//import config
+import config from '../../common/config';
+
 //import redux actions
 import { logOutEvent } from '../../store/authSlice';
+import { useIsFocused } from '@react-navigation/native';
 
 const Accounts = () => {
 
+  const isFocused = useIsFocused();
   const dispatch = useDispatch();
   let userInfo = useSelector((state) => state.name.userInfo);
 
   //function to sign out the user
   const signOut = async() => {
-    await GoogleSignin.signOut();
-    dispatch(logOutEvent());
+    try {
+        await GoogleSignin.signOut();
+        dispatch(logOutEvent());
+    } catch (error) {
+        console.log(error);
+    }
   }
 
+  //user profile item component
   const UserProfile = ({item, index}) => {
     return(
         <View style={{flexDirection:"row", alignItems:"center", justifyContent:'space-between', padding:20}}>
@@ -50,6 +60,7 @@ const Accounts = () => {
     )
   }
 
+  //blocked contact item component
   const BlockedContactItem = () => {
     return(
         <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', paddingVertical: 10}}>
@@ -63,6 +74,14 @@ const Accounts = () => {
         </View>
     )
   }
+
+  useEffect(() => {
+    if(isFocused){
+        GoogleSignin.configure({
+            'webClientId': config.WEB_CLIENT_ID
+        });
+    }
+}, [isFocused]);
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
