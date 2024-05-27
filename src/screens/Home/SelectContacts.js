@@ -1,6 +1,7 @@
-import { View, Text, SafeAreaView, StyleSheet, Image, FlatList, TouchableOpacity } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import { View, Text, SafeAreaView, StyleSheet, FlatList, TouchableOpacity, Platform, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useIsFocused } from '@react-navigation/native';
+import FastImage from 'react-native-fast-image';
 
 //import constants
 import { Colors, FontFamily, Images } from '../../common/constants';
@@ -18,13 +19,15 @@ const SelectContacts = ({navigation, route}) => {
 
   const isFocused = useIsFocused();
   const [ contacts, setContacts ]                 = useState([]);
+  const [ filteredContacts, setFilteredContacts ] = useState([]);
   const [ letters, setLetters ]                   = useState([]);
   const [ selectedCount, setSelectedCount ]       = useState(null);
+  const [ loaderStatus, setLoaderStatus ]         = useState(false);
 
   //funtion to select contacts
   const selectContacts = (id, value) => {
     let updatedList = [...contacts];
-    let prevIndex = updatedList.findIndex(item => item?.id === id);
+    let prevIndex = updatedList.findIndex(item => item?.recordID === id);
     if(prevIndex !== -1){
         updatedList[prevIndex].isSelected = value;
         setContacts(updatedList);
@@ -35,17 +38,18 @@ const SelectContacts = ({navigation, route}) => {
   //contact item component
   const ContactItem = ({item, index}) => {
     return(
-      <TouchableOpacity key={index} activeOpacity={0.7} onPress={() => selectContacts(item?.id, !item?.isSelected)} style={styles.contactItemContainer}>
+      <TouchableOpacity key={index} activeOpacity={0.7} onPress={() => selectContacts(item?.recordID, !item?.isSelected)} style={styles.contactItemContainer}>
         <View style={{flexDirection:'row', alignItems:'center', width:"87%"}}>
-            <Image source={Images.defaultAvatar} style={{width:44, height: 44}} />
-            <Text style={styles.contactNameText}>{item?.name}</Text>
+            <FastImage source={item?.thumbnailPath !== ''? {uri: item?.thumbnailPath, priority:"high"}: Images.defaultAvatar} style={{width:44, height: 44, borderRadius: 10}} />
+            <Text style={styles.contactNameText}>{item?.displayName}</Text>
         </View>
         {!item.isSelected? 
-        <View style={styles.checkBtn} />
+          <View style={styles.checkBtn} />
         :
-        <View style={styles.checkedBtn}>
-            <SvgCheck width={13} height={13} />
-        </View>}
+          <View style={styles.checkedBtn}>
+              <SvgCheck width={13} height={13} />
+          </View>
+        }
       </TouchableOpacity>
     )
   }
@@ -56,7 +60,7 @@ const SelectContacts = ({navigation, route}) => {
       <View key={index} style={{flexDirection:'row'}}>
         <Text style={styles.contactInitialText}>{letter}</Text>
         <FlatList
-          data={contacts.filter(contact => getUcFirstLetter(contact?.name) === letter)}
+          data={contacts.filter(contact => getUcFirstLetter(contact?.displayName) === letter)}
           showsVerticalScrollIndicator={false}
           nestedScrollEnabled={true}
           renderItem={ContactItem}
@@ -67,19 +71,27 @@ const SelectContacts = ({navigation, route}) => {
 
   //function to get the contacts list
   const getContactList = () => {
-    let contacts = route?.params?.contacts;
-    if(route?.params?.type === undefined){
-      contacts.forEach(item => {
-        delete item?.isSelected;
-      })
-      setContacts(contacts);
+    setLoaderStatus(true);
+    let { contacts, type } = route?.params || {};
+    if (!contacts) return;
+
+    const isTypeUndefined = type === undefined;
+
+    contacts.forEach(item => {
+        if (isTypeUndefined) {
+            if (item.isSelected) delete item.isSelected;
+        } else {
+            item.isSelected = true;
+        }
+    });
+
+    if (isTypeUndefined) {
+        setContacts(contacts);
     } else {
-      contacts.forEach(item => {
-        item.isSelected = true;
-      })
-      setSelectedCount(contacts?.length);
-      setContacts(contacts);
+        setSelectedCount(contacts.length);
+        setContacts(contacts);
     }
+    setTimeout(() => setLoaderStatus(false), 50);
   }
 
   useEffect(() => {
@@ -91,15 +103,22 @@ const SelectContacts = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
-        <PageHeader headerTitle={selectedCount? `${selectedCount} selected`: 'Select Contacts'} backBtn iconArr={selectedCount? ['trash', 'share']: []} navigation={navigation} />
+        <PageHeader headerTitle={selectedCount? `${selectedCount} selected`: 'Select Contacts'} backBtn iconArr={selectedCount? ['trash', 'share']: null} searchEvent={(req) => searchEvent(req)} navigation={navigation} />
         <View style={{paddingHorizontal: 20}}>
-            <FlatList
-                data={letters}
-                nestedScrollEnabled={true}
-                showsVerticalScrollIndicator={false}
-                renderItem={ContactGroupItem}
-                ListFooterComponent={<View style={{height: Platform.OS === 'android'? 230: 200}} />}
-            />
+            {loaderStatus? 
+              <View style={{alignItems:"center", justifyContent:"center", marginTop:'90%'}}>
+                <ActivityIndicator size={'large'} color={Colors.Primary} />
+              </View>
+            :
+              <FlatList
+                  data={letters}
+                  nestedScrollEnabled={true}
+                  showsVerticalScrollIndicator={false}
+                  renderItem={ContactGroupItem}
+                  ListFooterComponent={<View style={{height: Platform.OS === 'android'? 230: 200}} />}
+                  keyExtractor={(_, index) => index.toString()}
+              />
+            }
       </View>
     </SafeAreaView>
   )

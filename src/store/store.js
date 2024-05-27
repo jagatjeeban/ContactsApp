@@ -6,9 +6,8 @@ export const store = configureStore({
     reducer: persistedReducer,
     middleware: (getDefaultMiddleWare) => 
         getDefaultMiddleWare({
-            serializableCheck: {
-                ignoredActions: [ FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER ]
-            }
+            immutableCheck: false,
+            serializableCheck: false
         })
 });
 

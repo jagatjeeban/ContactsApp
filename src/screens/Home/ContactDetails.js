@@ -21,6 +21,7 @@ import SvgMail       from '../../assets/icons/svg/mail.svg';
 import SvgShare      from '../../assets/icons/svg/share.svg';
 import SvgCallWhite  from '../../assets/icons/svg/callWhite.svg';
 import SvgTrash      from '../../assets/icons/svg/trash.svg';
+import { getUcFirstLetterString } from '../../common/helper/customFun';
 
 const ContactDetails = ({navigation, route}) => {
 
@@ -28,6 +29,7 @@ const ContactDetails = ({navigation, route}) => {
 
   const isFocused = useIsFocused();
   const [ contactInfo, setContactInfo ]         = useState({});
+  const [ phoneNumbers, setPhoneNumbers ]       = useState([]);
   const [ actions, setActions ]                 = useState([
                                                   {id: 1, icon: <SvgCall />,    title: 'Call'},
                                                   {id: 2, icon: <SvgMessage />, title: 'Message'},
@@ -44,7 +46,7 @@ const ContactDetails = ({navigation, route}) => {
         </View>
         <View style={{marginLeft: 20}}>
           <Text style={styles.mobileNumber}>{item?.number}</Text>
-          <Text style={{color: Colors.Base_Medium_Grey, fontSize: 16, fontFamily: FontFamily.OutfitRegular}}>{item?.label}</Text>
+          <Text style={styles.contactLabel}>{getUcFirstLetterString(item?.label)}</Text>
         </View>
       </View>
     )
@@ -69,6 +71,18 @@ const ContactDetails = ({navigation, route}) => {
     )
   }
 
+  //function to remove duplicate phone numbers
+  const removeDuplicateNumbers = (arr) => {
+    const uniqueNumbers = new Set();
+    return arr?.reduce((info, current) => {
+      if (!uniqueNumbers.has(current.number.replace(/\s+/g, ''))) {
+        uniqueNumbers.add(current.number.replace(/\s+/g, ''));
+        info.push(current);
+      }
+      return info;
+    }, []);
+  };
+
   useEffect(() => {
     if(isFocused && Platform.OS === 'android'){
       StatusBar.setBackgroundColor(Colors.Base_Dark_Black);
@@ -91,12 +105,13 @@ const ContactDetails = ({navigation, route}) => {
       <FlatList
         data={[1]}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{paddingBottom: 50}}
         renderItem={() => {
           return(
             <View>
               <View style={{alignItems:'center'}}>
-                <FastImage source={contactInfo?.thumbnailPath !== ''? {uri: contactInfo?.thumbnailPath}: Images.defaultAvatar1} style={{width: 120, height: 120, borderRadius:30}}  />
-                <Text style={{color: Colors.Base_White, fontSize: 22, fontFamily: FontFamily.OutfitRegular, marginTop: 20}}>{contactInfo?.displayName}</Text>
+                <FastImage source={contactInfo?.thumbnailPath !== ''? {uri: contactInfo?.thumbnailPath}: Images.defaultAvatar1} style={{width: 140, height: 140, borderRadius:30}}  />
+                <Text style={styles.contactName}>{Platform.OS === 'android'? contactInfo?.displayName: `${contactInfo?.givenName} ${contactInfo?.familyName}`}</Text>
               </View>
               <View style={styles.actionsContainer}>
                 {actions.map((item, index) => {
@@ -113,16 +128,16 @@ const ContactDetails = ({navigation, route}) => {
               <View style={styles.contactInfoContainer}>
                 <Text style={styles.contactInfoText}>Contact Info</Text>
                 <FlatList
-                  data={contactInfo?.phoneNumbers}
+                  data={removeDuplicateNumbers(contactInfo?.phoneNumbers)}
                   showsVerticalScrollIndicator={false}
                   renderItem={ContactInfoItem}
                   ItemSeparatorComponent={<View style={{backgroundColor: Colors.Base_Grey, height:1, marginVertical:15}} />}
-                  keyExtractor={item => item?.id.toString()}
+                  keyExtractor={(_, index) => index.toString()}
                 />
               </View>
-              <TouchableOpacity activeOpacity={0.7} onPress={() => deleteSheetRef.current.open()} style={{flexDirection:'row', alignItems:'center', marginHorizontal: 20, paddingBottom:20}}>
-                <SvgTrash />
-                <Text style={{color: Colors.Base_Red, fontSize: 18, fontFamily: FontFamily.OutfitMedium, marginLeft: 15}}>Delete Number</Text>
+              <TouchableOpacity activeOpacity={0.7} onPress={() => deleteSheetRef.current.open()} style={{flexDirection:'row', alignItems:'center', marginHorizontal: 20, marginTop: 20, paddingVertical:10}}>
+                <SvgTrash width={18} height={18} />
+                <Text style={{color: Colors.Base_Red, fontSize: 16, fontFamily: FontFamily.OutfitMedium, marginLeft: 15}}>Delete contact</Text>
               </TouchableOpacity>
             </View>
           )
@@ -200,7 +215,7 @@ const styles = StyleSheet.create({
     flexDirection:'row', 
     alignItems:"center", 
     justifyContent:"space-around", 
-    marginTop: 60,
+    marginTop: 40,
   },
   actionText: {
     color: Colors.Base_White, 
@@ -212,13 +227,14 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.Bg_Light, 
     borderRadius: 22, 
     marginHorizontal: 20, 
-    marginVertical: 30, 
+    marginTop: 30, 
     padding: 20
   },
   contactInfoText: {
     color: Colors.Base_Medium_Grey, 
     fontSize: 16, 
-    fontFamily: FontFamily.OutfitRegular, 
+    fontFamily: FontFamily.OutfitMedium,
+    fontWeight: '500', 
     marginBottom: 20
   },
   actionBtn: {
@@ -249,6 +265,17 @@ const styles = StyleSheet.create({
   mobileNumber: {
     color: Colors.Base_White, 
     fontSize: 18, 
+    fontFamily: FontFamily.OutfitRegular
+  },
+  contactName: {
+    color: Colors.Base_White, 
+    fontSize: 22, 
+    fontFamily: FontFamily.OutfitRegular, 
+    marginTop: 20
+  },
+  contactLabel: {
+    color: Colors.Base_Medium_Grey, 
+    fontSize: 16, 
     fontFamily: FontFamily.OutfitRegular
   },
 })

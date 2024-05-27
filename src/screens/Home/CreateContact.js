@@ -2,6 +2,7 @@ import { View, SafeAreaView, StyleSheet, Platform, TouchableOpacity, Image, Text
 import React, { useEffect, useRef, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { setAdjustPan, setAdjustResize } from 'rn-android-keyboard-adjust';
 
 //import constants
 import { Colors, FontFamily, Images } from '../../common/constants';
@@ -19,9 +20,8 @@ import SvgUser       from '../../assets/icons/svg/userIcon.svg';
 import SvgCall       from '../../assets/icons/svg/callGrey.svg';
 import SvgMail       from '../../assets/icons/svg/mailGrey.svg';
 import SvgPlus       from '../../assets/icons/svg/plusWhite.svg';
-import { setAdjustPan, setAdjustResize } from 'rn-android-keyboard-adjust';
 
-const AddContact = ({navigation}) => {
+const CreateContact = ({navigation}) => {
 
   const isFocused = useIsFocused();
   const dropdownController               = useRef(null);
@@ -142,7 +142,7 @@ const AddContact = ({navigation}) => {
   )
 }
 
-export default AddContact;
+export default CreateContact;
 
 const styles = StyleSheet.create({
   safeAreaView: {

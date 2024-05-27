@@ -7,3 +7,12 @@ export const getUcFirstLetter = (string) => {
         return string;
     }
 }
+
+//function to get the string with its first letter in uppercase
+export const getUcFirstLetterString = (string) => {
+    if(string !== undefined && string !== ''){
+        return string?.charAt(0)?.toUpperCase() + string?.slice(1);
+    } else {
+        return string;
+    }
+}

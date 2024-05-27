@@ -32,7 +32,8 @@ target 'ContactsApp' do
   pod 'FirebaseCoreInternal', :modular_headers => true
   pod 'GoogleUtilities', :modular_headers => true
   pod 'FirebaseCore', :modular_headers => true
-
+  pod 'react-native-contacts', :path => '../node_modules/react-native-contacts'
+  
   use_react_native!(
     :path => config[:reactNativePath],
     # Enables Flipper.

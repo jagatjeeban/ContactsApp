@@ -1,9 +1,10 @@
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, BackHandler } from 'react-native';
 import React, { useState, useEffect } from 'react';
-import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
+import { Menu, MenuItem } from 'react-native-material-menu';
+import { useIsFocused } from '@react-navigation/native';
 
 //import constants
-import { Images, Colors, FontFamily } from '../common/constants';
+import { Colors, FontFamily } from '../common/constants';
 
 //import svgs
 import SvgSearch     from '../assets/icons/svg/search.svg';
@@ -12,6 +13,8 @@ import SvgCross      from '../assets/icons/svg/crossGrey.svg';
 import SvgBackGrey   from '../assets/icons/svg/backArrowGrey.svg';
 
 const HomeHeader = ({placeholder='Search', menuBtn=false, selectEvent=null, selectAllEvent=null, searchBlur=null, searchEvent}) => {
+  
+  const isFocused = useIsFocused();
   const [ searchInput, setSearchInput ]     = useState('');
   const [ searchStatus, setSearchStatus ]   = useState(false);
   const [ menuVisible, setMenuVisible ]     = useState(false);
@@ -28,9 +31,11 @@ const HomeHeader = ({placeholder='Search', menuBtn=false, selectEvent=null, sele
   }
 
   useEffect(()=>{
-      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
-      return () => backHandler.remove();
-  }, [searchStatus]);
+      if(isFocused){
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+        return () => backHandler.remove();
+      }
+  }, [searchStatus, isFocused]);
 
   return (
     <View style={[styles.mainContainer, {padding: !searchStatus? 20: null}]}>
@@ -51,8 +56,8 @@ const HomeHeader = ({placeholder='Search', menuBtn=false, selectEvent=null, sele
               </TouchableOpacity>
             }
           >
-            <MenuItem onPress={() => [ setMenuVisible(false), selectEvent? selectEvent(): null ]} pressColor={null} textStyle={styles.menuItemText} >Select</MenuItem>
-            <MenuItem onPress={() => [ setMenuVisible(false), selectAllEvent? selectAllEvent(): null ]} pressColor={null} textStyle={styles.menuItemText} >Select all</MenuItem>
+            <MenuItem onPress={() => [ setMenuVisible(false), setTimeout(() => { selectEvent? selectEvent(): null }, 200) ]} pressColor={null} textStyle={styles.menuItemText} >Select</MenuItem>
+            <MenuItem onPress={() => [ setMenuVisible(false), setTimeout(() => { selectAllEvent? selectAllEvent(): null }, 200) ]} pressColor={null} textStyle={styles.menuItemText} >Select all</MenuItem>
           </Menu>: null}
         </TouchableOpacity>
         :
@@ -73,9 +78,10 @@ const HomeHeader = ({placeholder='Search', menuBtn=false, selectEvent=null, sele
               />
           </View>
           {searchInput !== ''? 
-          <TouchableOpacity onPress={() => [searchEvent(''), setSearchInput('')]} style={{padding:20}}>
-              <SvgCross />
-          </TouchableOpacity>: null}
+            <TouchableOpacity onPress={() => [searchEvent(''), setSearchInput('')]} style={{padding:20}}>
+                <SvgCross />
+            </TouchableOpacity>
+          : null}
         </View>}
     </View>
   )

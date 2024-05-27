@@ -1,24 +1,26 @@
-import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet, FlatList, Image, Platform, PermissionsAndroid } from 'react-native'
+import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet, FlatList, Image, Platform, PermissionsAndroid, ActivityIndicator, RefreshControl } from 'react-native'
 import React, { useEffect, useState, useRef } from 'react';
 import { useIsFocused } from '@react-navigation/native';
-import RBSheet from 'react-native-raw-bottom-sheet';
 import FastImage from 'react-native-fast-image';
-import Contact from 'react-native-contacts';
+import Contact, { checkPermission, requestPermission } from 'react-native-contacts';
+import { useDispatch, useSelector } from 'react-redux';
 
 //import constants
 import { Colors, FontFamily, Images } from '../../common/constants';
 
+//import common functions
+import { sortContacts } from '../../common/helper/commonFun';
+
 //import svgs
 import SvgPlus       from '../../assets/icons/svg/plus.svg';
-import SvgActiveUser from '../../assets/icons/svg/activeUser.svg';
-import SvgAddAccount from '../../assets/icons/svg/addAccount.svg';
 
 //import components
 import { HomeHeader } from '../../components';
 
 //import custom functions
 import { getUcFirstLetter } from '../../common/helper/customFun';
-import { useDispatch, useSelector } from 'react-redux';
+
+//import redux actions
 import { storeContacts } from '../../store/dashSlice';
 
 const Contacts = ({navigation}) => {
@@ -27,56 +29,12 @@ const Contacts = ({navigation}) => {
   const dispatch = useDispatch();
   let dash = useSelector((state) => state.dash);
 
-  //refs
-  const refProfileSheet = useRef();
-
   //states
   const [ contacts, setContacts ]                   = useState([]);
-  const [ filteredContacts, setFilteredContacts ]   = useState([...dash?.contacts]);
+  const [ filteredContacts, setFilteredContacts ]   = useState([]);
   const [ sortedContacts, setSortedContacts ]       = useState([]);
   const [ uniqueLetters, setUniqueLetters ]         = useState([]);
-
-  //logged in user profile component
-  const UserProfileSheet = ({refRBSheet}) => {
-
-    const ProfileItem = ({item, index}) => {
-      return(
-        <View style={styles.userInfo}>
-          <View style={{flexDirection:'row', alignItems:'center'}}>
-            <Image source={Images.defaultAvatar} style={{width: 44, height: 44}} />
-            <View style={{marginLeft: 20}}>
-              <Text style={styles.userName}>Morgan Bill Ford</Text>
-              <Text style={styles.userEmail}>fordmorganbill@gmail.com</Text>
-            </View>
-          </View>
-          {index === 0? 
-          <View style={styles.activeUser}>
-            <SvgActiveUser width={15} height={15} />
-            <Text style={{color: Colors.Primary, fontSize: 15, fontFamily: FontFamily.OutfitRegular, marginLeft:7}}>Active</Text>
-          </View>: null}
-        </View>
-      )
-    }
-
-    return(
-      <RBSheet ref={refRBSheet} height={350} customStyles={{draggableIcon: styles.pillsBarStyle, container: styles.bottomSheet}} draggable dragOnContent closeOnPressBack>
-        <View style={styles.bottomSheetContainer}>
-          <View>
-            <FlatList
-              data={[1, 2]}
-              showsVerticalScrollIndicator={false}
-              renderItem={ProfileItem}
-              ItemSeparatorComponent={<View style={styles.lineSeparator} />}
-            />
-          </View>
-          <TouchableOpacity onPress={() => refRBSheet.current.close()} activeOpacity={0.7} style={styles.addAccountBtn}>
-            <SvgAddAccount />
-            <Text style={{color: Colors.Base_White, fontSize: 18, fontFamily: FontFamily.OutfitMedium, fontWeight: '500', marginLeft: 10}}>Add Another Account</Text>
-          </TouchableOpacity>
-        </View>
-      </RBSheet>
-    )
-  }
+  const [ loaderStatus, setLoaderStatus ]           = useState(false);
 
   //contact item component
   const ContactItem = ({item, index}) => {
@@ -106,50 +64,62 @@ const Contacts = ({navigation}) => {
 
   //function to get all the contacts
   const getAllContacts = () => {
+    setLoaderStatus(true);
     Contact.getAll()
       .then((contacts) => {
         let newList = contacts.filter(item => item?.phoneNumbers?.length > 0);
         dispatch(storeContacts(newList));
         let displayList = newList.map(item => {
           return {
-            recordID: item?.recordID,
-            displayName: item?.displayName,
-            thumbnailPath: item?.thumbnailPath
+            'recordID': item?.recordID,
+            'displayName': Platform.OS === 'android'? item?.displayName: `${item?.givenName} ${item?.familyName}`,
+            'thumbnailPath': item?.thumbnailPath
           }
         });
         setContacts(displayList);
         setFilteredContacts(displayList);
+        setLoaderStatus(false);
       })
       .catch((e) => {
+        setLoaderStatus(false);
         console.log(e);
       });
   }
 
   //function to request permission to read contacts
-  const requestPermission = () => {
-    PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_CONTACTS, {
-      title: 'Connect',
-      message: 'Connect would like to view your contacts',
-      buttonPositive: 'OK',
-      buttonNeutral: 'Not now',
-      buttonNegative: 'Cancel'
-    })
-    .then((res) => {
-      // console.log('Permission: ', res);
-      getAllContacts();
-    })
-    .catch((error) => {
-      console.log('Permission Error: ', error);
-    });
+  const requestContactsPermission = async() => {
+    if(Platform.OS === 'android'){
+      PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_CONTACTS, {
+        title: 'Connect',
+        message: 'Connect would like to view your contacts',
+        buttonPositive: 'OK',
+        buttonNeutral: 'Not now',
+        buttonNegative: 'Cancel'
+      })
+      .then((res) => {
+        getAllContacts();
+      })
+      .catch((error) => {
+        console.log('Permission Error: ', error);
+      });
+    } 
+    else {
+      let response = await checkPermission();
+      if(response === 'authorized'){
+        getAllContacts();
+      } else {
+        await requestPermission();
+      }
+    }
   }
 
   useEffect(() => {
-    requestPermission();
+    requestContactsPermission();
   }, []);
 
   //sorted contacts arrays in alphabetical order
   useEffect(() => {
-    setSortedContacts(filteredContacts.sort((a, b) => a?.displayName?.localeCompare(b?.displayName)));
+    setSortedContacts(sortContacts(filteredContacts));
   }, [filteredContacts]);
 
   //extract unique first letters from the sorted contacts array
@@ -166,23 +136,45 @@ const Contacts = ({navigation}) => {
     }
   }
 
+  //function to handle the navigation to select contacts screen
+  const handleNavigationToSelectContacts = (type) => {
+    if(type === 'all'){
+      navigation.navigate('SelectContacts', {type: 'all', letters: uniqueLetters, contacts: sortedContacts});
+    } else {
+      navigation.navigate('SelectContacts', {letters: uniqueLetters, contacts: sortedContacts});
+    }
+  }
+
   return (
     <SafeAreaView style={styles.safeAreaView}>
-      <HomeHeader clickEvent={() => refProfileSheet.current.open()} placeholder={'Search contacts'} menuBtn selectEvent={() => navigation.navigate('SelectContacts', {contacts: sortedContacts, letters: uniqueLetters})} selectAllEvent={() => navigation.navigate('SelectContacts', {type: 'all', contacts: sortedContacts, letters: uniqueLetters})} searchEvent={(val) => searchEvent(val)} />
-      <View style={{paddingHorizontal: 20}}>
-        <FlatList
-          data={uniqueLetters}
-          nestedScrollEnabled={true}
-          showsVerticalScrollIndicator={false}
-          renderItem={ContactGroupItem}
-          ListFooterComponent={<View style={{height: Platform.OS === 'android'? 230: 200}} />}
-          keyExtractor={(_, index) => index.toString()}
-        />
-      </View>
-      <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('AddContact')} style={styles.addContactBtn}>
+      <HomeHeader clickEvent={() => refProfileSheet.current.open()} placeholder={'Search contacts'} menuBtn selectEvent={() => handleNavigationToSelectContacts()} selectAllEvent={() => handleNavigationToSelectContacts('all')} searchEvent={(val) => searchEvent(val)} />
+      {loaderStatus? 
+          <View style={{alignItems:"center", justifyContent:"center", marginTop:'70%'}}>
+            <ActivityIndicator size={'large'} color={Colors.Primary} />
+          </View>
+        :
+        <View style={{paddingHorizontal: 20}}>
+          <FlatList
+            data={uniqueLetters}
+            nestedScrollEnabled={true}
+            refreshControl={
+              <RefreshControl
+                refreshing={loaderStatus}
+                onRefresh={() => getAllContacts()}
+                colors={[Colors.Primary]}
+                progressBackgroundColor={Colors.Primary_Light}
+              />
+            }
+            showsVerticalScrollIndicator={false}
+            renderItem={ContactGroupItem}
+            ListFooterComponent={<View style={{height: Platform.OS === 'android'? 230: 200}} />}
+            keyExtractor={(_, index) => index.toString()}
+          />
+        </View>
+      }
+      <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('CreateContact')} style={styles.addContactBtn}>
         <SvgPlus />
       </TouchableOpacity>
-      <UserProfileSheet refRBSheet={refProfileSheet} />
     </SafeAreaView>
   )
 }
@@ -200,7 +192,7 @@ const styles = StyleSheet.create({
     bottom:150, 
     backgroundColor: Colors.Primary_Light, 
     padding: 17,
-    borderRadius:12, 
+    borderRadius:15, 
     alignItems:'center', 
     justifyContent:'center'
   },

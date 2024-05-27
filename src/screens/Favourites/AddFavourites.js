@@ -1,5 +1,5 @@
 import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, FlatList, Image, Platform } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
 //import constants
@@ -15,25 +15,17 @@ import { getUcFirstLetter } from '../../common/helper/customFun';
 import SvgFavourite from '../../assets/icons/svg/favourites.svg';
 import SvgPrimaryFav from '../../assets/icons/svg/primaryFav.svg';
 import { useIsFocused } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
+import { sortContacts } from '../../common/helper/commonFun';
+import FastImage from 'react-native-fast-image';
 
 const AddFavourites = ({navigation}) => {
 
+  const dash = useSelector((state) => state.dash);
   const isFocused = useIsFocused();
 
-  const dummyContacts = [
-        {'id': 1, 'name': 'Alex'},
-        {'id': 2, 'name': 'Kirti'},
-        {'id': 3, 'name': 'Jagat'},
-        {'id': 4, 'name': 'Vivek'},
-        {'id': 5, 'name': 'Sk Singh'},
-        {'id': 6, 'name': 'Aman'},
-        {'id': 7, 'name': 'Vishal'},
-        {'id': 8, 'name': 'Akhilesh'},
-        {'id': 9, 'name': 'Jaggu'},
-        {'id': 10, 'name': 'Shariq'},
-        {'id': 11, 'name': 'Vishal Singh'},
-  ];
-  const [ filteredContacts, setFilteredContacts ]   = useState([...dummyContacts]);
+  const [ contacts, setContacts ]                   = useState([]);
+  const [ filteredContacts, setFilteredContacts ]   = useState([]);
   const [ sortedContacts, setSortedContacts ]       = useState([]);
   const [ uniqueLetters, setUniqueLetters ]         = useState([]);
   const [ selectedCount, setSelectedCount ]         = useState(null);
@@ -51,7 +43,7 @@ const AddFavourites = ({navigation}) => {
   //function to update the fav contacts list
   const updateFavContacts = (id, value) => {
     let updatedList = [...filteredContacts];
-    let prevIndex = updatedList.findIndex(item => item?.id === id);
+    let prevIndex = updatedList.findIndex(item => item?.recordID === id);
     if(prevIndex !== -1){
       updatedList[prevIndex].isSelected = value;
       setSelectedCount(updatedList.filter(item => item.isSelected && item.isSelected === true)?.length);
@@ -64,10 +56,10 @@ const AddFavourites = ({navigation}) => {
     return(
       <View key={index} style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
         <View style={styles.contactItemContainer}>
-            <Image source={Images.defaultAvatar} style={{width:44, height: 44}} />
-            <Text style={styles.contactNameText}>{item?.name}</Text>
+            <FastImage source={item?.thumbnailPath !== ''? {uri: item?.thumbnailPath, priority:'high'}: Images.defaultAvatar} style={{width:44, height: 44, borderRadius:10}} />
+            <Text style={styles.contactNameText}>{item?.displayName}</Text>
         </View>
-        <TouchableOpacity onPress={() => updateFavContacts(item.id, !item?.isSelected)} style={{padding: 10}}>
+        <TouchableOpacity onPress={() => updateFavContacts(item.recordID, !item?.isSelected)} style={{padding: 10}}>
             {item.isSelected? <SvgPrimaryFav width={20} height={20} />: <SvgFavourite width={20} height={20} />}
         </TouchableOpacity>
       </View>
@@ -80,7 +72,7 @@ const AddFavourites = ({navigation}) => {
       <View key={index} style={{flexDirection:'row'}}>
         <Text style={styles.contactInitialText}>{letter}</Text>
         <FlatList
-          data={sortedContacts.filter(contact => getUcFirstLetter(contact?.name) === letter)}
+          data={sortedContacts.filter(contact => getUcFirstLetter(contact?.displayName) === letter)}
           showsVerticalScrollIndicator={false}
           renderItem={ContactItem}
         />
@@ -88,14 +80,28 @@ const AddFavourites = ({navigation}) => {
     )
   }
 
+  useEffect(() => {
+    if(isFocused){
+      let contactList = dash.contacts.map(item => {
+        return {
+          'recordID': item?.recordID,
+          'displayName': Platform.OS === 'android'? item?.displayName: `${item?.givenName} ${item?.familyName}`,
+          'thumbnailPath': item?.thumbnailPath
+        }
+      });
+      setContacts(contactList);
+      setFilteredContacts(contactList);
+    }
+  }, [isFocused]);
+
   //sorted contacts arrays in alphabetical order
   useEffect(() => {
-    setSortedContacts(filteredContacts.sort((a, b) => a?.name?.localeCompare(b?.name)));
+    setSortedContacts(sortContacts(filteredContacts));
   }, [filteredContacts]);
 
   //extract unique first letters from the sorted contacts array
   useEffect(() => {
-    setUniqueLetters([...new Set(sortedContacts.map(contact => getUcFirstLetter(contact?.name)))]);
+    setUniqueLetters([...new Set(sortedContacts.map(contact => getUcFirstLetter(contact?.displayName)))]);
   }, [sortedContacts]);
 
   useEffect(() => {
@@ -111,9 +117,9 @@ const AddFavourites = ({navigation}) => {
   //function to search contacts
   const searchEvent = (req) => {
     if(req === ''){
-      setFilteredContacts(dummyContacts);
+      setFilteredContacts(contacts);
     } else {
-      setFilteredContacts(dummyContacts.filter(item => item?.name?.toLowerCase()?.includes(req?.toLowerCase())));
+      setFilteredContacts(contacts.filter(item => item?.displayName?.toLowerCase()?.includes(req?.toLowerCase())));
     }
   }
 
@@ -125,6 +131,7 @@ const AddFavourites = ({navigation}) => {
     });
     actionTabY.value = withTiming(120, { duration: 300 });
     setFilteredContacts(updatedList);
+    setSelectedCount(null);
   }
 
   return (

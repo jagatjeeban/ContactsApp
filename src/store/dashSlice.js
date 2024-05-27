@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    contacts: []
+    contacts: [],
+    displayContacts: []
 }
 
 const dashSlice = createSlice({
@@ -10,9 +11,12 @@ const dashSlice = createSlice({
     reducers: {
         storeContacts(state, action) {
             state.contacts = action.payload
+        },
+        storeDisplayContacts(state, action) {
+            state.displayContacts = action.payload
         }
     }
 });
 
-export const { storeContacts } = dashSlice.actions;
+export const { storeContacts, storeDisplayContacts } = dashSlice.actions;
 export default dashSlice.reducer;

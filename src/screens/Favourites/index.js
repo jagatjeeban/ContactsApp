@@ -1,32 +1,26 @@
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Image, FlatList, ScrollView } from 'react-native'
-import React, { useRef, useState } from 'react'
+import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Image, Platform, ScrollView } from 'react-native'
+import React, { useRef, useState, useEffect } from 'react'
+import { useSelector } from 'react-redux';
 
 //import constants
 import { Colors, FontFamily, Images } from '../../common/constants';
+
+//import components
 import { HomeHeader } from '../../components';
 
 //import svgs
 import SvgPlus from '../../assets/icons/svg/plus.svg';
+import { useIsFocused } from '@react-navigation/native';
+import FastImage from 'react-native-fast-image';
 
 const Favourites = ({navigation}) => {
 
+  const dash = useSelector((state) => state.dash);
   const refProfileSheet = useRef();
+  const isFocused = useIsFocused();
 
-  const dummyContacts = [
-    {'id': 1, 'name': 'Alex'},
-    {'id': 2, 'name': 'Kirti'},
-    {'id': 3, 'name': 'Jagat'},
-    {'id': 4, 'name': 'Vivek'},
-    {'id': 5, 'name': 'Sk Singh'},
-    {'id': 6, 'name': 'Aman'},
-    {'id': 7, 'name': 'Vishal'},
-    {'id': 8, 'name': 'Akhilesh'},
-    {'id': 9, 'name': 'Jaggu'},
-    {'id': 10, 'name': 'Shariq'},
-    {'id': 11, 'name': 'Vishal Singh'},
-  ];
-
-  const [ filteredContacts, setFilteredContacts ] = useState([...dummyContacts]);
+  const [ contacts, setContacts]                  = useState([]);
+  const [ filteredContacts, setFilteredContacts ] = useState([]);
 
   //header component
   const Header = () => {
@@ -44,11 +38,25 @@ const Favourites = ({navigation}) => {
   //function to search contacts
   const searchEvent = (req) => {
     if(req === ''){
-      setFilteredContacts(dummyContacts);
+      setFilteredContacts(contacts);
     } else {
-      setFilteredContacts(dummyContacts.filter(item => item?.name?.toLowerCase()?.includes(req?.toLowerCase())));
+      setFilteredContacts(contacts.filter(item => item?.displayName?.toLowerCase()?.includes(req?.toLowerCase())));
     }
   }
+
+  useEffect(() => {
+    if(isFocused){
+      let contactList = dash.contacts.map(item => {
+        return {
+          'recordID': item?.recordID,
+          'displayName': Platform.OS === 'android'? item?.displayName: `${item?.givenName} ${item?.familyName}`,
+          'thumbnailPath': item?.thumbnailPath
+        }
+      });
+      setContacts(contactList);
+      setFilteredContacts(contactList);
+    }
+  }, [isFocused]);
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
@@ -56,12 +64,12 @@ const Favourites = ({navigation}) => {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom: 130}}>
         <Header />
         <View style={styles.favContactsContainer}>
-          {filteredContacts.map((item, index) => {
+          {filteredContacts.slice(0, 6).map((item, index) => {
             return(
-              <View key={index} style={styles.favContactItem}>
-                <Image source={Images.defaultAvatar} style={{width: 70, height: 70}} />
-                <Text style={styles.favContactName}>{item?.name}</Text>
-              </View>
+              <TouchableOpacity key={index} activeOpacity={0.7} onPress={() => navigation.navigate('ContactDetails', {info: dash.contacts.filter(contact => contact?.recordID === item?.recordID)[0]})} style={styles.favContactItem}>
+                <FastImage source={item?.thumbnailPath !== ''? {uri: item?.thumbnailPath, priority:'high'}: Images.defaultAvatar} style={{width: 70, height: 70, borderRadius: 15}} />
+                <Text style={styles.favContactName}>{item?.displayName}</Text>
+              </TouchableOpacity>
             )
           })}
         </View>
@@ -107,8 +115,9 @@ const styles = StyleSheet.create({
     },
     favContactsContainer: {
       flexDirection:'row', 
-      alignItems:"center", 
       flexWrap:'wrap',
+      paddingHorizontal: 15,
+      paddingBottom: 30
     },
     favContactItem: {
       alignItems:'center', 
@@ -119,6 +128,8 @@ const styles = StyleSheet.create({
       color: Colors.Base_White, 
       fontSize: 18, 
       fontFamily: FontFamily.OutfitRegular, 
-      marginTop:15
+      marginTop:15,
+      textAlign:'center',
+      width:"90%"
     },
 })
