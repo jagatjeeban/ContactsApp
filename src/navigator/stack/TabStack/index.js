@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import React from "react";
 import { useSelector } from "react-redux";
 import FastImage from "react-native-fast-image";
-import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 //import constants
 import { Colors, FontFamily, Images } from "../../../common/constants";
@@ -80,8 +80,8 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.Bg_Light, 
         borderWidth: 1,
         borderColor: Colors.Base_Grey,
-        paddingBottom: Platform.OS === 'ios'? 30: 20,
-        paddingTop: 20,
+        paddingBottom: Platform.OS === 'ios'? 25: 15,
+        paddingTop: 15,
         borderTopLeftRadius: 30, 
         borderTopRightRadius: 30,
     },

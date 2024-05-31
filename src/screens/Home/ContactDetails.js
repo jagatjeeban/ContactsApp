@@ -1,8 +1,11 @@
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, StatusBar, FlatList, Platform } from 'react-native'
+import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, StatusBar, FlatList, Platform, Linking } from 'react-native'
 import React, { useRef, useState, useEffect } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import FastImage from 'react-native-fast-image';
+import vCard from 'vcards-js';
+import Share from 'react-native-share';
+import base64 from 'react-native-base64';
 
 //import constants
 import { Colors, FontFamily, Images, Strings } from '../../common/constants';
@@ -13,7 +16,10 @@ import { screenDimensions } from '../../common/helper/systemStatic';
 //import components
 import { PageHeader } from '../../components';
 
-//import svg
+//import custom functions
+import { getUcFirstLetterString } from '../../common/helper/customFun';
+
+//import svgs
 import SvgUpperCurve from '../../assets/images/svg/upperCurve.svg';
 import SvgCall       from '../../assets/icons/svg/call.svg';
 import SvgMessage    from '../../assets/icons/svg/message.svg';
@@ -21,21 +27,12 @@ import SvgMail       from '../../assets/icons/svg/mail.svg';
 import SvgShare      from '../../assets/icons/svg/share.svg';
 import SvgCallWhite  from '../../assets/icons/svg/callWhite.svg';
 import SvgTrash      from '../../assets/icons/svg/trash.svg';
-import { getUcFirstLetterString } from '../../common/helper/customFun';
 
 const ContactDetails = ({navigation, route}) => {
-
+  const contact = vCard();
   const deleteSheetRef = useRef();
-
   const isFocused = useIsFocused();
   const [ contactInfo, setContactInfo ]         = useState({});
-  const [ phoneNumbers, setPhoneNumbers ]       = useState([]);
-  const [ actions, setActions ]                 = useState([
-                                                  {id: 1, icon: <SvgCall />,    title: 'Call'},
-                                                  {id: 2, icon: <SvgMessage />, title: 'Message'},
-                                                  {id: 3, icon: <SvgMail />,    title: 'Email'},
-                                                  {id: 4, icon: <SvgShare />,   title: 'Share'}
-                                                ]);
 
   //contact info item component
   const ContactInfoItem = ({item, index}) => {
@@ -83,6 +80,89 @@ const ContactDetails = ({navigation, route}) => {
     }, []);
   };
 
+  //function to open the default message app
+  const openMessagingApp = (phoneNumber) => {
+    let url = '';
+    
+    if (Platform.OS === 'android') {
+      url = `sms:${phoneNumber.replace(/\s+/g, '')}`;
+    } else if (Platform.OS === 'ios') {
+      url = `sms:${phoneNumber.replace(/\s+/g, '')}`;
+    }
+
+    Linking.openURL(url);
+  };
+
+  //function to open the default mail app
+  const openMailApp = (mailId) => {
+    let url = '';
+
+    if (Platform.OS === 'android') {
+      url = `mailto:${mailId}`;
+    } else if (Platform.OS === 'ios') {
+      url = `mailto:${mailId}`;
+    }
+
+    Linking.openURL(url);
+  }
+
+  //function to open the default calling app
+  const openCallApp = (phoneNumber) => {
+    let url = '';
+
+    if (Platform.OS === 'android') {
+      url = `tel:${phoneNumber.replace(/\s+/g, '')}`;
+    } else if (Platform.OS === 'ios') {
+      url = `tel:${phoneNumber.replace(/\s+/g, '')}`;
+    }
+
+    Linking.openURL(url);
+  }
+
+  //function to generate the vCard string
+  const generateVCardString = () => {
+    contact.firstName = contactInfo?.givenName;
+    contact.middleName = contactInfo?.middleName;
+    contact.lastName = contactInfo?.familyName;
+    contactInfo?.phoneNumbers.forEach((item, index) => {
+      if(item?.label === 'main' || item?.label === 'mobile'){
+        contact.cellPhone = contactInfo?.phoneNumbers[index]?.number;
+      }
+      if(item?.label === 'home'){
+        contact.homePhone = contactInfo?.phoneNumbers[index]?.number;
+      }
+      if(item?.label === 'work'){
+        contact.workPhone = contactInfo?.phoneNumbers[index]?.number;
+      }
+    });
+    contactInfo?.emailAddresses.forEach((item, index) => {
+      if(item?.label === 'work'){
+        contact.workEmail = contactInfo?.emailAddresses[index]?.email;
+      } else {
+        contact.email = contactInfo?.emailAddresses[index]?.email;
+      }
+    });
+
+    const vCardString = contact.getFormattedString();
+    return vCardString;
+  }
+
+  //function to share the contact
+  const shareContact = () => {
+    const vCardString = generateVCardString();
+    const vCardBase64 = base64.encode(vCardString);
+    const vCardDataUrl = `data:text/vcard;base64,${vCardBase64}`;
+
+    const options = {
+      url: vCardDataUrl,
+      type: 'text/vcard',
+      fileName: `${contactInfo?.displayName}.vcf`
+    }
+    Share.open(options)
+    .then(() => {})
+    .catch((err) => { console.log(err) })
+  }
+
   useEffect(() => {
     if(isFocused && Platform.OS === 'android'){
       StatusBar.setBackgroundColor(Colors.Base_Dark_Black);
@@ -114,16 +194,32 @@ const ContactDetails = ({navigation, route}) => {
                 <Text style={styles.contactName}>{Platform.OS === 'android'? contactInfo?.displayName: `${contactInfo?.givenName} ${contactInfo?.familyName}`}</Text>
               </View>
               <View style={styles.actionsContainer}>
-                {actions.map((item, index) => {
-                  return(
-                    <TouchableOpacity key={index} activeOpacity={0.7} style={{alignItems:"center"}}>
-                      <View style={styles.actionIconContainer}>
-                        {item.icon}
-                      </View>
-                      <Text style={styles.actionText}>{item.title}</Text>
-                    </TouchableOpacity>
-                  )
-                })}
+                <TouchableOpacity activeOpacity={0.7} onPress={() => openCallApp(contactInfo?.phoneNumbers[0]?.number)} style={{alignItems:"center"}}>
+                  <View style={styles.actionIconContainer}>
+                    <SvgCall />
+                  </View>
+                  <Text style={styles.actionText}>Call</Text>
+                </TouchableOpacity>
+                <TouchableOpacity activeOpacity={0.7} onPress={() => openMessagingApp(contactInfo?.phoneNumbers[0]?.number)} style={{alignItems:"center"}}>
+                  <View style={styles.actionIconContainer}>
+                    <SvgMessage />
+                  </View>
+                  <Text style={styles.actionText}>Message</Text>
+                </TouchableOpacity>
+                {contactInfo?.emailAddresses?.length > 0?
+                  <TouchableOpacity activeOpacity={0.7} onPress={() => openMailApp(contactInfo?.emailAddresses[0]?.email)} style={{alignItems:"center"}}>
+                    <View style={styles.actionIconContainer}>
+                      <SvgMail />
+                    </View>
+                    <Text style={styles.actionText}>Email</Text>
+                  </TouchableOpacity>
+                : null}
+                <TouchableOpacity activeOpacity={0.7} onPress={() => shareContact()} style={{alignItems:"center"}}>
+                  <View style={styles.actionIconContainer}>
+                    <SvgShare />
+                  </View>
+                  <Text style={styles.actionText}>Share</Text>
+                </TouchableOpacity>
               </View>
               <View style={styles.contactInfoContainer}>
                 <Text style={styles.contactInfoText}>Contact Info</Text>
