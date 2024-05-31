@@ -124,7 +124,27 @@ const ContactDetails = ({navigation, route}) => {
     contact.firstName = contactInfo?.givenName;
     contact.middleName = contactInfo?.middleName;
     contact.lastName = contactInfo?.familyName;
-    contact.workPhone = contactInfo?.phoneNumbers[0]?.number;
+    contactInfo?.phoneNumbers.forEach((item, index) => {
+      if(item?.label === 'mobile'){
+        contact.cellPhone = contactInfo?.phoneNumbers[index]?.number;
+      }
+      if(item?.label === 'main'){
+        contact.cellPhone = contactInfo?.phoneNumbers[index]?.number;
+      }
+      if(item?.label === 'home'){
+        contact.homePhone = contactInfo?.phoneNumbers[index]?.number;
+      }
+      if(item?.label === 'work'){
+        contact.workPhone = contactInfo?.phoneNumbers[index]?.number;
+      }
+    });
+    contactInfo?.emailAddresses.forEach((item, index) => {
+      if(item?.label === 'work'){
+        contact.workEmail = contactInfo?.emailAddresses[index]?.email;
+      } else {
+        contact.email = contactInfo?.emailAddresses[index]?.email;
+      }
+    });
 
     const vCardString = contact.getFormattedString();
     return vCardString;
