@@ -125,10 +125,7 @@ const ContactDetails = ({navigation, route}) => {
     contact.middleName = contactInfo?.middleName;
     contact.lastName = contactInfo?.familyName;
     contactInfo?.phoneNumbers.forEach((item, index) => {
-      if(item?.label === 'mobile'){
-        contact.cellPhone = contactInfo?.phoneNumbers[index]?.number;
-      }
-      if(item?.label === 'main'){
+      if(item?.label === 'main' || item?.label === 'mobile'){
         contact.cellPhone = contactInfo?.phoneNumbers[index]?.number;
       }
       if(item?.label === 'home'){
