@@ -38,7 +38,7 @@ const HomeHeader = ({placeholder='Search', menuBtn=false, selectEvent=null, sele
   }, [searchStatus, isFocused]);
 
   return (
-    <View style={[styles.mainContainer, {padding: !searchStatus? 20: null}]}>
+    <View style={[styles.mainContainer, {paddingHorizontal: !searchStatus? 20: null, paddingVertical: !searchStatus? 10: null}]}>
         {!searchStatus? 
         <TouchableOpacity activeOpacity={0.7} onPress={() => [setSearchStatus(true)]} style={[styles.searchContainer, {paddingVertical: menuBtn? null: 14}]}>
           <View style={{flexDirection:"row", alignItems:"center"}}>
@@ -61,7 +61,7 @@ const HomeHeader = ({placeholder='Search', menuBtn=false, selectEvent=null, sele
           </Menu>: null}
         </TouchableOpacity>
         :
-        <View style={{flex: 1, flexDirection: 'row', alignItems:"center", justifyContent:"space-between", borderBottomWidth: 1, borderColor: Colors.Base_Grey, paddingTop: 13, marginBottom:13}}>
+        <View style={{flex: 1, flexDirection: 'row', alignItems:"center", justifyContent:"space-between", borderBottomWidth: 1, borderColor: Colors.Base_Grey}}>
           <View style={{flexDirection:'row', alignItems:"center", width:"87%"}}>
               <TouchableOpacity onPress={() => [setSearchStatus(false), searchEvent(''), setSearchInput('')]} style={{padding: 20}}>
                   <SvgBackGrey />
@@ -72,7 +72,7 @@ const HomeHeader = ({placeholder='Search', menuBtn=false, selectEvent=null, sele
                   placeholderTextColor={Colors.Base_Medium_Grey}
                   value={searchInput}
                   autoFocus={true}
-                  style={{color: Colors.Base_White, fontSize: 18, fontFamily: FontFamily.OutfitRegular, paddingVertical:20, width:'85%'}}
+                  style={{color: Colors.Base_White, fontSize: 16, fontFamily: FontFamily.OutfitRegular, paddingVertical:20, width:'85%'}}
                   onBlur={() => { if(searchBlur) searchBlur() }}
                   onChange={(e) => [searchEvent(e.nativeEvent.text), setSearchInput(e.nativeEvent.text)]}
               />
@@ -121,6 +121,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.Bg_Light, 
     borderRadius: 10, 
     borderWidth: 1, 
-    borderColor: Colors.Base_Grey
+    borderColor: Colors.Base_Grey,
   },
 })

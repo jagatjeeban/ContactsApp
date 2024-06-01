@@ -40,7 +40,13 @@ const Contacts = ({navigation}) => {
   const ContactItem = ({item, index}) => {
     return(
       <TouchableOpacity key={index} activeOpacity={0.7} onPress={() => navigation.navigate('ContactDetails', {info: dash.contacts.filter(contact => contact?.recordID === item?.recordID)[0]})} style={styles.contactItemContainer}>
-        <FastImage source={item?.thumbnailPath !== ''? {uri: item?.thumbnailPath, priority:'high'}: Images.defaultAvatar} style={{width:44, height: 44, borderRadius: 10}} />
+        {item?.thumbnailPath !== ''? 
+          <FastImage source={{uri: item?.thumbnailPath, priority:'high'}} style={styles.contactImg} />
+        :
+          <View style={styles.defaultContactImg}>
+            <Text style={styles.contactFirstLetter}>{getUcFirstLetter(item?.displayName)}</Text>
+          </View>
+        }
         <Text style={styles.contactNameText}>{item?.displayName}</Text>
       </TouchableOpacity>
     )
@@ -189,7 +195,7 @@ const styles = StyleSheet.create({
   addContactBtn: {
     position:"absolute", 
     right:20, 
-    bottom:150, 
+    bottom:115, 
     backgroundColor: Colors.Primary_Light, 
     padding: 17,
     borderRadius:15, 
@@ -274,5 +280,23 @@ const styles = StyleSheet.create({
     fontFamily: FontFamily.OutfitMedium,
     marginTop: 20,
     width: 40,
+  },
+  contactImg: {
+    width:44, 
+    height: 44, 
+    borderRadius: 10
+  },
+  defaultContactImg: {
+    width: 44, 
+    height: 44, 
+    alignItems:'center', 
+    justifyContent:"center", 
+    borderRadius: 10, 
+    backgroundColor: Colors.Primary_Light
+  },
+  contactFirstLetter: {
+    color: Colors.Primary, 
+    fontSize: 20, 
+    fontFamily: FontFamily.OutfitMedium
   },
 })

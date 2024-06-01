@@ -1,6 +1,5 @@
 import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { showMessage } from 'react-native-flash-message';
 import { useIsFocused } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
@@ -30,22 +29,25 @@ const Login = ({navigation}) => {
 
     //function to sign in using google credentials
     const signIn = async() => {
+        setLoaderStatus(true);
         try {
             // Check if your device supports Google Play
             await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
             
             // Get the users ID token
             const { idToken } = await GoogleSignin.signIn();
-        
+
             // Create a Google credential with the token
             const googleCredential = auth.GoogleAuthProvider.credential(idToken);
 
             const currentUser = await GoogleSignin.getCurrentUser();
             dispatch(loginSuccess(currentUser));
+            setLoaderStatus(false);
 
             // Sign-in the user with the credential
             return auth().signInWithCredential(googleCredential);
         } catch (error) {
+            setLoaderStatus(false);
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
                 // user cancelled the login flow
             } else if (error.code === statusCodes.IN_PROGRESS) {
@@ -54,7 +56,7 @@ const Login = ({navigation}) => {
             } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
                 showMessage({message: 'Please install or update the play services on your devices to be able to sign in using google!', type:"danger", icon:'info'})
             } else {
-                showMessage({message: 'Sign In failed', description: 'Something wrong happened!', type:"danger", icon:"info"});
+                showMessage({message: 'Sign In failed', description: 'Something wrong happened! Please check your internet connection.', type:"danger", icon:"info"});
                 console.log('SIGN IN ERROR: ', JSON.stringify(error));
             }
         }
@@ -71,11 +73,6 @@ const Login = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
-        {loaderStatus? 
-        <View style={[styles.mainContainer, {justifyContent:'center'}]}>
-            <ActivityIndicator size={'large'} color={Colors.Primary} />
-        </View>
-        :
         <View style={styles.mainContainer}>
             <View style={{marginTop:'30%'}}>
                 <SvgWelcome width={276} height={214} />
@@ -85,10 +82,16 @@ const Login = ({navigation}) => {
                 <Text style={styles.appDescription}>{Strings.WelcomeText}</Text>
             </View>
             <TouchableOpacity activeOpacity={1} onPress={() => signIn()} style={styles.loginBtn}>
-                <SvgGoogleLogo />
-                <Text style={styles.loginBtnText}>{Strings.ContinueWithGoogle}</Text>
+                {loaderStatus? 
+                    <ActivityIndicator size={'small'} color={Colors.Base_White} />
+                :
+                    <>
+                        <SvgGoogleLogo />
+                        <Text style={styles.loginBtnText}>{Strings.ContinueWithGoogle}</Text>
+                    </>
+                }
             </TouchableOpacity>
-        </View>}
+        </View>
     </SafeAreaView>
   )
 }
@@ -121,7 +124,7 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         alignItems:'center',
         position:'absolute', 
-        bottom: 30, 
+        bottom: 20, 
         backgroundColor: Colors.Bg_Light, 
         alignItems:'center', 
         justifyContent:"center", 

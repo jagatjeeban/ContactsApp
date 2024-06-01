@@ -8,7 +8,7 @@ import Share from 'react-native-share';
 import base64 from 'react-native-base64';
 
 //import constants
-import { Colors, FontFamily, Images, Strings } from '../../common/constants';
+import { Colors, FontFamily, Strings } from '../../common/constants';
 
 //import system statics
 import { screenDimensions } from '../../common/helper/systemStatic';
@@ -17,7 +17,7 @@ import { screenDimensions } from '../../common/helper/systemStatic';
 import { PageHeader } from '../../components';
 
 //import custom functions
-import { getUcFirstLetterString } from '../../common/helper/customFun';
+import { getUcFirstLetterString, getUcFirstLetter } from '../../common/helper/customFun';
 
 //import svgs
 import SvgUpperCurve from '../../assets/images/svg/upperCurve.svg';
@@ -125,7 +125,7 @@ const ContactDetails = ({navigation, route}) => {
     contact.middleName = contactInfo?.middleName;
     contact.lastName = contactInfo?.familyName;
     contactInfo?.phoneNumbers.forEach((item, index) => {
-      if(item?.label === 'main' || item?.label === 'mobile'){
+      if(item?.label === 'main' || item?.label === 'mobile' || item?.label === 'other'){
         contact.cellPhone = contactInfo?.phoneNumbers[index]?.number;
       }
       if(item?.label === 'home'){
@@ -190,7 +190,13 @@ const ContactDetails = ({navigation, route}) => {
           return(
             <View>
               <View style={{alignItems:'center'}}>
-                <FastImage source={contactInfo?.thumbnailPath !== ''? {uri: contactInfo?.thumbnailPath}: Images.defaultAvatar1} style={{width: 140, height: 140, borderRadius:30}}  />
+                {contactInfo?.thumbnailPath !== ''? 
+                  <FastImage source={{uri: contactInfo?.thumbnailPath}} style={styles.contactImg}  />
+                :
+                  <View style={styles.defaultContactImg}>
+                    <Text style={styles.contactFirstLetter}>{getUcFirstLetter(contactInfo?.displayName)}</Text>
+                  </View>
+                }
                 <Text style={styles.contactName}>{Platform.OS === 'android'? contactInfo?.displayName: `${contactInfo?.givenName} ${contactInfo?.familyName}`}</Text>
               </View>
               <View style={styles.actionsContainer}>
@@ -260,7 +266,9 @@ const styles = StyleSheet.create({
   bottomSheet: {
     borderTopLeftRadius: 30, 
     borderTopRightRadius: 30, 
-    borderWidth:1, 
+    borderTopWidth:1,
+    borderLeftWidth: 1,
+    borderRightWidth: 1, 
     borderColor: Colors.Base_Grey,
     backgroundColor: Colors.Bg_Light
   },
@@ -373,5 +381,23 @@ const styles = StyleSheet.create({
     color: Colors.Base_Medium_Grey, 
     fontSize: 16, 
     fontFamily: FontFamily.OutfitRegular
+  },
+  contactImg: {
+    width: 140, 
+    height: 140, 
+    borderRadius: 30
+  },
+  defaultContactImg: {
+    width: 140, 
+    height: 140, 
+    alignItems:'center', 
+    justifyContent:"center", 
+    borderRadius: 30, 
+    backgroundColor: Colors.Primary
+  },
+  contactFirstLetter: {
+    color: Colors.Base_White, 
+    fontSize: 50, 
+    fontFamily: FontFamily.OutfitMedium
   },
 })

@@ -5,7 +5,7 @@ import FastImage from "react-native-fast-image";
 import { Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 //import constants
-import { Colors, FontFamily, Images } from "../../../common/constants";
+import { Colors, FontFamily } from "../../../common/constants";
 
 //import svgs
 import SvgContacts from '../../../assets/icons/svg/contacts.svg';
@@ -78,9 +78,11 @@ const styles = StyleSheet.create({
         justifyContent:"space-evenly", 
         alignItems:"center", 
         backgroundColor: Colors.Bg_Light, 
-        borderWidth: 1,
+        borderLeftWidth: 1,
+        borderTopWidth: 1,
+        borderRightWidth: 1,
         borderColor: Colors.Base_Grey,
-        paddingBottom: Platform.OS === 'ios'? 25: 15,
+        paddingBottom: Platform.OS === 'ios'? 25: 5,
         paddingTop: 15,
         borderTopLeftRadius: 30, 
         borderTopRightRadius: 30,
