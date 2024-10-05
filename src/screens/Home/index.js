@@ -1,8 +1,8 @@
-import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet, FlatList, Image, Platform, PermissionsAndroid, ActivityIndicator, RefreshControl } from 'react-native'
+import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet, FlatList, Image, Platform, PermissionsAndroid, ActivityIndicator, RefreshControl, Alert, Linking } from 'react-native'
 import React, { useEffect, useState, useRef } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
-import Contact, { checkPermission, requestPermission } from 'react-native-contacts';
+import Contact from 'react-native-contacts';
 import { useDispatch, useSelector } from 'react-redux';
 
 //import constants
@@ -12,7 +12,7 @@ import { Colors, FontFamily, Images } from '../../common/constants';
 import { sortContacts } from '../../common/helper/commonFun';
 
 //import svgs
-import SvgPlus       from '../../assets/icons/svg/plus.svg';
+import SvgPlus from '../../assets/icons/svg/plus.svg';
 
 //import components
 import { HomeHeader } from '../../components';
@@ -35,6 +35,7 @@ const Contacts = ({navigation}) => {
   const [ sortedContacts, setSortedContacts ]       = useState([]);
   const [ uniqueLetters, setUniqueLetters ]         = useState([]);
   const [ loaderStatus, setLoaderStatus ]           = useState(false);
+  const [ isGranted, setIsGranted ]                 = useState(false);
 
   //contact item component
   const ContactItem = ({item, index}) => {
@@ -103,25 +104,45 @@ const Contacts = ({navigation}) => {
         buttonNegative: 'Cancel'
       })
       .then((res) => {
+        setIsGranted(true);
         getAllContacts();
       })
       .catch((error) => {
+        setIsGranted(false);
         console.log('Permission Error: ', error);
       });
     } 
     else {
-      let response = await checkPermission();
-      if(response === 'authorized'){
-        getAllContacts();
-      } else {
-        await requestPermission();
-      }
+      Contact.checkPermission()
+      .then((response) => {
+        if(response === 'authorized'){
+          setIsGranted(true);
+          getAllContacts();
+        } else {
+          setIsGranted(false);
+          Alert.alert(
+            'Permission Required',
+            'Contacts access was denied. Please enable it from settings to continue.',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Open Settings', onPress: () => Linking.openSettings() }
+            ]
+          )
+        }
+      })
+      .catch(error => {
+        console.log(error)
+      })
     }
   }
 
   useEffect(() => {
     requestContactsPermission();
   }, []);
+
+  useEffect(() => {
+    getAllContacts();
+  }, [dash?.contacts?.length]);
 
   //sorted contacts arrays in alphabetical order
   useEffect(() => {
@@ -154,29 +175,37 @@ const Contacts = ({navigation}) => {
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <HomeHeader clickEvent={() => refProfileSheet.current.open()} placeholder={'Search contacts'} menuBtn selectEvent={() => handleNavigationToSelectContacts()} selectAllEvent={() => handleNavigationToSelectContacts('all')} searchEvent={(val) => searchEvent(val)} />
-      {loaderStatus? 
-          <View style={{alignItems:"center", justifyContent:"center", marginTop:'70%'}}>
-            <ActivityIndicator size={'large'} color={Colors.Primary} />
-          </View>
-        :
-        <View style={{paddingHorizontal: 20}}>
-          <FlatList
-            data={uniqueLetters}
-            nestedScrollEnabled={true}
-            refreshControl={
-              <RefreshControl
-                refreshing={loaderStatus}
-                onRefresh={() => getAllContacts()}
-                colors={[Colors.Primary]}
-                progressBackgroundColor={Colors.Primary_Light}
-              />
-            }
-            showsVerticalScrollIndicator={false}
-            renderItem={ContactGroupItem}
-            ListFooterComponent={<View style={{height: Platform.OS === 'android'? 230: 200}} />}
-            keyExtractor={(_, index) => index.toString()}
-          />
+      {!isGranted? 
+        <View style={{flex:1, alignItems:'center', justifyContent:'center'}}>
+          <Text style={styles.requireAccessTextStyle}>Connect needs to access your contacts.</Text>
+          <TouchableOpacity onPress={() => requestContactsPermission()} style={{marginTop: 20, backgroundColor: Colors.Primary_Light, paddingVertical: 10, paddingHorizontal: 20, borderRadius: 30, alignItems:'center', justifyContent:'center'}}>
+            <Text style={{color: Colors.Primary, fontSize: 17, fontFamily: FontFamily.OutfitMedium}}>Grant Permission</Text>
+          </TouchableOpacity>
         </View>
+      :
+        loaderStatus? 
+            <View style={{alignItems:"center", justifyContent:"center", marginTop:'70%'}}>
+              <ActivityIndicator size={'large'} color={Colors.Primary} />
+            </View>
+          :
+          <View style={{paddingHorizontal: 20}}>
+            <FlatList
+              data={uniqueLetters}
+              nestedScrollEnabled={true}
+              refreshControl={
+                <RefreshControl
+                  refreshing={loaderStatus}
+                  onRefresh={() => getAllContacts()}
+                  colors={[Colors.Primary]}
+                  progressBackgroundColor={Colors.Primary_Light}
+                />
+              }
+              showsVerticalScrollIndicator={false}
+              renderItem={ContactGroupItem}
+              ListFooterComponent={<View style={{height: Platform.OS === 'android'? 230: 200}} />}
+              keyExtractor={(_, index) => index.toString()}
+            />
+          </View>
       }
       <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('CreateContact')} style={styles.addContactBtn}>
         <SvgPlus />
@@ -195,7 +224,7 @@ const styles = StyleSheet.create({
   addContactBtn: {
     position:"absolute", 
     right:20, 
-    bottom:115, 
+    bottom:135, 
     backgroundColor: Colors.Primary_Light, 
     padding: 17,
     borderRadius:15, 
@@ -298,5 +327,10 @@ const styles = StyleSheet.create({
     color: Colors.Primary, 
     fontSize: 20, 
     fontFamily: FontFamily.OutfitMedium
+  },
+  requireAccessTextStyle: {
+    fontSize: 20, 
+    fontFamily: FontFamily.OutfitRegular, 
+    color: Colors.Base_Medium_Grey
   },
 })

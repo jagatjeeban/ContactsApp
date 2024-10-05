@@ -52,7 +52,7 @@ const TabStackNavigator = () => {
                 </TouchableOpacity>
                 <TouchableOpacity activeOpacity={1} onPress={navigateToAccounts} style={{alignItems:"center"}}>
                     <FastImage source={{uri: userInfo?.user?.photo, priority:"high"}} style={{width: 50, height: 50, borderWidth: activeScreen === 'Accounts'? 1.5: 0, borderColor: Colors.Primary, borderRadius:10}} />
-                    <Text style={[styles.tabTitle, {color: activeScreen === 'Accounts'? Colors.Primary: Colors.Base_Medium_Grey}]}>Accounts</Text>
+                    <Text style={[styles.tabTitle, {color: activeScreen === 'Accounts'? Colors.Primary: Colors.Base_Medium_Grey}]}>Profile</Text>
                 </TouchableOpacity>
             </View>
         )

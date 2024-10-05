@@ -5,16 +5,13 @@ import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown';
 import SvgArrowDown from '../../assets/icons/svg/arrowDown.svg';
 
 export default DropDown = ({ dropDownList, closeDropdown, placeholder = null, isEdit=false, clearInput, initialValue, loaderStatus, name = "", errorStatus = "", onRef, onSelectEvent, dropdownController}) => {
-
-    const [selectedId, setSelectedId] = useState(0);
-
     return (
         <AutocompleteDropdown
             controller={(controller) => {
                 dropdownController.current = controller;
             }}
             containerStyle={{ marginBottom: -7, fontFamily: FontFamily.OutfitRegular }}
-            position={'absolute'}
+            position={'relative'}
             onChevronPress={() => closeDropdown? closeDropdown(): null}
             onOpenSuggestionsList={(e) => e ? closeDropdown() : null}
             closeOnSubmit={true}
@@ -26,7 +23,7 @@ export default DropDown = ({ dropDownList, closeDropdown, placeholder = null, is
                 style: styles.textInputProps,
                 placeholder: placeholder,
                 selectionColor: Colors.Primary,
-                placeholderTextColor: Colors.Base_Medium_Grey,
+                placeholderTextColor: isEdit? Colors.Base_White: Colors.Base_Medium_Grey,
             }}
             ChevronIconComponent={<SvgArrowDown />}
             direction={"down"}
@@ -35,13 +32,13 @@ export default DropDown = ({ dropDownList, closeDropdown, placeholder = null, is
             onClear={() => clearInput? clearInput(): null}
             EmptyResultComponent={<View style={{ paddingHorizontal: 15, paddingVertical: 10 }}><Text style={{ fontFamily: FontFamily.OutfitRegular, color: Colors.Base_White, backgroundColor: Colors.Bg_Light }}>No Options</Text></View>}
             renderItem={(item, index) =>
-                <View style={{zIndex: 1000, borderRadius:12 }}>
-                    <Text style={{ fontFamily: FontFamily.OutfitRegular, color: Colors.Base_White, backgroundColor: Colors.Bg_Light, borderRadius: 12, paddingHorizontal: 15, paddingVertical: 10, fontSize: 16 }}>{item.title}</Text>
+                <View key={index} style={{zIndex: 1000, borderRadius:12, backgroundColor: Colors.Bg_Light }}>
+                    <Text style={{ fontFamily: FontFamily.OutfitRegular, color: Colors.Base_White, borderRadius: 12, paddingHorizontal: 15, paddingVertical: 10, fontSize: 16 }}>{item.title}</Text>
                 </View>
             }
             suggestionsListContainerStyle={styles.suggestionContainer}
             initialValue={initialValue}
-            onSelectItem={(e) => [onSelectEvent(e), setSelectedId(e)]}
+            onSelectItem={(e) => onSelectEvent(e)}
             loading={loaderStatus}
             inputContainerStyle={styles.inputContainer}
             dataSet={dropDownList}
@@ -78,6 +75,6 @@ const styles = StyleSheet.create({
         borderRadius: 12, 
         width: 160, 
         marginLeft: 40, 
-        marginTop: 15
+        marginVertical: 15,
     },
 });

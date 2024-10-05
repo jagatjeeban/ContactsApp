@@ -6,6 +6,9 @@ import FastImage from 'react-native-fast-image';
 import vCard from 'vcards-js';
 import Share from 'react-native-share';
 import base64 from 'react-native-base64';
+import Contact from 'react-native-contacts';
+import { showMessage } from 'react-native-flash-message';
+import { useDispatch, useSelector } from 'react-redux';
 
 //import constants
 import { Colors, FontFamily, Strings } from '../../common/constants';
@@ -28,10 +31,22 @@ import SvgShare      from '../../assets/icons/svg/share.svg';
 import SvgCallWhite  from '../../assets/icons/svg/callWhite.svg';
 import SvgTrash      from '../../assets/icons/svg/trash.svg';
 
+//import redux slice
+import { storeContacts } from '../../store/dashSlice';
+
 const ContactDetails = ({navigation, route}) => {
+  
   const contact = vCard();
-  const deleteSheetRef = useRef();
   const isFocused = useIsFocused();
+
+  //store events
+  const dispatch = useDispatch();
+  const dash = useSelector(state => state.dash);
+
+  //refs
+  const deleteSheetRef = useRef();
+
+  //states
   const [ contactInfo, setContactInfo ]         = useState({});
 
   //contact info item component
@@ -57,15 +72,32 @@ const ContactDetails = ({navigation, route}) => {
           <Text style={styles.deleteText} numberOfLines={null}>{Strings.DeleteNumberText}</Text>
         </View>
         <View style={styles.actionBtnContainer}>
-          <TouchableOpacity onPress={() => refRBSheet.current.close()} style={styles.actionBtn}>
+          <TouchableOpacity activeOpacity={0.7} onPress={() => refRBSheet.current.close()} style={styles.actionBtn}>
             <Text style={styles.actionBtnText}>No, Keep it!</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.actionBtn, {backgroundColor: Colors.Primary}]}>
+          <TouchableOpacity activeOpacity={0.7} onPress={() => deleteContact()} style={[styles.actionBtn, {backgroundColor: Colors.Primary}]}>
             <Text style={[styles.actionBtnText, {color: Colors.Base_White}]}>Yes, Delete!</Text>
           </TouchableOpacity>
         </View>
       </RBSheet>
     )
+  }
+
+  //function to delete the contact
+  const deleteContact = () => {
+    deleteSheetRef.current.close();
+    Contact.deleteContact({ recordID: contactInfo?.recordID })
+    .then(() => {
+      let updatedContacts = [...dash?.contacts];
+      let index = updatedContacts.findIndex(contact => contact?.recordID === contactInfo?.recordID);
+      updatedContacts.splice(index, 1);
+      dispatch(storeContacts(updatedContacts));
+      navigation.pop();
+      showMessage({message:'Contact deleted successfully!', type:'danger', icon:'success'});
+    })
+    .catch((error) => {
+      console.log('DELETE ERROR:', JSON.stringify(error));
+    })
   }
 
   //function to remove duplicate phone numbers
@@ -163,6 +195,13 @@ const ContactDetails = ({navigation, route}) => {
     .catch((err) => { console.log(err) })
   }
 
+  //function to perform contact actions
+  const actionClickEvent = (req) => {
+    if(req === 'edit'){
+      navigation.navigate('CreateContact', {'info': contactInfo, 'reqType': 'edit'});
+    }
+  }
+
   useEffect(() => {
     if(isFocused && Platform.OS === 'android'){
       StatusBar.setBackgroundColor(Colors.Base_Dark_Black);
@@ -181,7 +220,7 @@ const ContactDetails = ({navigation, route}) => {
       <View style={styles.upperCurveEffect}>
         <SvgUpperCurve width={screenDimensions?.width} />
       </View>
-      <PageHeader backBtn iconArr={['whiteStar', 'pencil']} navigation={navigation} />
+      <PageHeader backBtn iconArr={['whiteStar', 'pencil']} rightBtnClickEvent={(req) => actionClickEvent(req)} navigation={navigation} />
       <FlatList
         data={[1]}
         showsVerticalScrollIndicator={false}
@@ -190,11 +229,11 @@ const ContactDetails = ({navigation, route}) => {
           return(
             <View>
               <View style={{alignItems:'center'}}>
-                {contactInfo?.thumbnailPath !== ''? 
+                {contactInfo?.thumbnailPath && contactInfo?.thumbnailPath !== ''? 
                   <FastImage source={{uri: contactInfo?.thumbnailPath}} style={styles.contactImg}  />
                 :
                   <View style={styles.defaultContactImg}>
-                    <Text style={styles.contactFirstLetter}>{getUcFirstLetter(contactInfo?.displayName)}</Text>
+                    <Text style={styles.contactFirstLetter}>{getUcFirstLetter(Platform.OS === 'android'? contactInfo?.displayName: contactInfo?.givenName)}</Text>
                   </View>
                 }
                 <Text style={styles.contactName}>{Platform.OS === 'android'? contactInfo?.displayName: `${contactInfo?.givenName} ${contactInfo?.familyName}`}</Text>

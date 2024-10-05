@@ -6094,10 +6094,10 @@ react-native-base64@^0.2.1:
   resolved "https://registry.yarnpkg.com/react-native-base64/-/react-native-base64-0.2.1.tgz#3d0e73a649c4c0129f7b7695d3912456aebae847"
   integrity sha512-eHgt/MA8y5ZF0aHfZ1aTPcIkDWxza9AaEk4GcpIX+ZYfZ04RcaNahO+527KR7J44/mD3efYfM23O2C1N44ByWA==
 
-react-native-contacts@^7.0.8:
-  version "7.0.8"
-  resolved "https://registry.yarnpkg.com/react-native-contacts/-/react-native-contacts-7.0.8.tgz#485ba7a77653b30205c76f96494808d07b8e57b9"
-  integrity sha512-Zfkdpw1uQVRb8v1m+ogknzjyfEs9k63o2sPAYvxZ8ZJff31D45G8+uZb6VcM4tIe3ELH9EDvh93nd515kFvRYQ==
+react-native-contacts@^8.0.1:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-contacts/-/react-native-contacts-8.0.1.tgz#a72328986068fe4795b3e16a81165f2758e46c2d"
+  integrity sha512-UWjtWaBUcaVoTNveVbH8v+q5iWNPm1F881gTDBsxelwZeSBD6KCa1MKynJnCNO1dOaIlMbZx+oF6Cc/44UrA5A==
 
 react-native-fast-image@^8.6.3:
   version "8.6.3"

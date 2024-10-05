@@ -40,49 +40,50 @@ const HomeHeader = ({placeholder='Search', menuBtn=false, selectEvent=null, sele
   return (
     <View style={[styles.mainContainer, {paddingHorizontal: !searchStatus? 20: null, paddingVertical: !searchStatus? 10: null}]}>
         {!searchStatus? 
-        <TouchableOpacity activeOpacity={0.7} onPress={() => [setSearchStatus(true)]} style={[styles.searchContainer, {paddingVertical: menuBtn? null: 14}]}>
-          <View style={{flexDirection:"row", alignItems:"center"}}>
-            <SvgSearch />
-            <Text style={styles.searchText}>{placeholder}</Text>
-          </View>
-          {menuBtn? 
-          <Menu 
-            visible={menuVisible} 
-            onRequestClose={() => setMenuVisible(false)}
-            style={styles.menuContainer}
-            anchor={
-              <TouchableOpacity activeOpacity={0.7} onPress={() => setMenuVisible(true)} style={{padding: 15}}>
-                <SvgMenu />
-              </TouchableOpacity>
-            }
-          >
-            <MenuItem onPress={() => [ setMenuVisible(false), setTimeout(() => { selectEvent? selectEvent(): null }, 200) ]} pressColor={null} textStyle={styles.menuItemText} >Select</MenuItem>
-            <MenuItem onPress={() => [ setMenuVisible(false), setTimeout(() => { selectAllEvent? selectAllEvent(): null }, 200) ]} pressColor={null} textStyle={styles.menuItemText} >Select all</MenuItem>
-          </Menu>: null}
-        </TouchableOpacity>
+          <TouchableOpacity activeOpacity={0.7} onPress={() => [setSearchStatus(true)]} style={[styles.searchContainer, {paddingVertical: menuBtn? null: 14}]}>
+            <View style={{flexDirection:"row", alignItems:"center"}}>
+              <SvgSearch />
+              <Text style={styles.searchText}>{placeholder}</Text>
+            </View>
+            {menuBtn? 
+            <Menu 
+              visible={menuVisible} 
+              onRequestClose={() => setMenuVisible(false)}
+              style={styles.menuContainer}
+              anchor={
+                <TouchableOpacity activeOpacity={0.7} onPress={() => setMenuVisible(true)} style={{padding: 15}}>
+                  <SvgMenu />
+                </TouchableOpacity>
+              }
+            >
+              <MenuItem onPress={() => [ setMenuVisible(false), setTimeout(() => { selectEvent? selectEvent(): null }, 200) ]} pressColor={null} textStyle={styles.menuItemText} >Select</MenuItem>
+              <MenuItem onPress={() => [ setMenuVisible(false), setTimeout(() => { selectAllEvent? selectAllEvent(): null }, 200) ]} pressColor={null} textStyle={styles.menuItemText} >Select all</MenuItem>
+            </Menu>: null}
+          </TouchableOpacity>
         :
-        <View style={{flex: 1, flexDirection: 'row', alignItems:"center", justifyContent:"space-between", borderBottomWidth: 1, borderColor: Colors.Base_Grey}}>
-          <View style={{flexDirection:'row', alignItems:"center", width:"87%"}}>
-              <TouchableOpacity onPress={() => [setSearchStatus(false), searchEvent(''), setSearchInput('')]} style={{padding: 20}}>
-                  <SvgBackGrey />
+          <View style={{flex: 1, flexDirection: 'row', alignItems:"center", justifyContent:"space-between", borderBottomWidth: 1, borderColor: Colors.Base_Grey}}>
+            <View style={{flexDirection:'row', alignItems:"center", width:"87%"}}>
+                <TouchableOpacity onPress={() => [setSearchStatus(false), searchEvent(''), setSearchInput('')]} style={{padding: 20}}>
+                    <SvgBackGrey />
+                </TouchableOpacity>
+                <TextInput
+                    placeholder={placeholder}
+                    selectionColor={Colors.Primary}
+                    placeholderTextColor={Colors.Base_Medium_Grey}
+                    value={searchInput}
+                    autoFocus={true}
+                    style={{color: Colors.Base_White, fontSize: 16, fontFamily: FontFamily.OutfitRegular, paddingVertical:20, width:'85%'}}
+                    onBlur={() => { if(searchBlur) searchBlur() }}
+                    onChange={(e) => [searchEvent(e.nativeEvent.text), setSearchInput(e.nativeEvent.text)]}
+                />
+            </View>
+            {searchInput !== ''? 
+              <TouchableOpacity onPress={() => [searchEvent(''), setSearchInput('')]} style={{padding:20}}>
+                  <SvgCross />
               </TouchableOpacity>
-              <TextInput
-                  placeholder={placeholder}
-                  selectionColor={Colors.Primary}
-                  placeholderTextColor={Colors.Base_Medium_Grey}
-                  value={searchInput}
-                  autoFocus={true}
-                  style={{color: Colors.Base_White, fontSize: 16, fontFamily: FontFamily.OutfitRegular, paddingVertical:20, width:'85%'}}
-                  onBlur={() => { if(searchBlur) searchBlur() }}
-                  onChange={(e) => [searchEvent(e.nativeEvent.text), setSearchInput(e.nativeEvent.text)]}
-              />
+            : null}
           </View>
-          {searchInput !== ''? 
-            <TouchableOpacity onPress={() => [searchEvent(''), setSearchInput('')]} style={{padding:20}}>
-                <SvgCross />
-            </TouchableOpacity>
-          : null}
-        </View>}
+        }
     </View>
   )
 }

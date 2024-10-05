@@ -1,15 +1,12 @@
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Image, FlatList } from 'react-native';
+import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, FlatList, Alert } from 'react-native';
 import React, { useEffect } from 'react';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIsFocused } from '@react-navigation/native';
+import FastImage from 'react-native-fast-image';
 
 //import constants
-import { Colors, FontFamily, Images } from '../../common/constants';
-
-//import svgs
-import SvgRemove from '../../assets/icons/svg/remove.svg';
-import SvgLock   from '../../assets/icons/svg/lock.svg';
+import { Colors, FontFamily } from '../../common/constants';
 
 //import components
 import { PageHeader } from '../../components';
@@ -24,7 +21,8 @@ const Accounts = () => {
 
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
-  let userInfo = useSelector((state) => state.auth.userInfo);
+  let userInfo = useSelector(state => state.auth.userInfo);
+  let dash = useSelector(state => state.dash);
 
   //function to sign out the user
   const signOut = async() => {
@@ -36,42 +34,19 @@ const Accounts = () => {
     }
   }
 
-  //user profile item component
-  const UserProfile = ({item, index}) => {
-    return(
-        <View style={{flexDirection:"row", alignItems:"center", justifyContent:'space-between', padding:20}}>
-            <View style={{flexDirection:"row"}}>
-                <Image source={{uri: userInfo?.user?.photo}} style={{width: 44, height: 44, borderRadius: 10}} />
-                <View style={{marginLeft: 15}}>
-                    <Text style={styles.userName}>{userInfo?.user?.name}</Text>
-                    <Text style={styles.userEmail}>{userInfo?.user?.email}</Text>
-                    {index === 0? 
-                        <View style={{flexDirection:'row', alignItems:'center', marginTop: 5}}>
-                            <View style={{backgroundColor: Colors.Primary, width:9, height: 9, borderRadius:40}} />
-                            <Text style={{color: Colors.Primary, fontSize: 14, fontFamily: FontFamily.OutfitRegular, marginLeft: 7}}>Active account</Text>
-                        </View>
-                    : null}
-                </View>
-            </View>
-            <TouchableOpacity onPress={() => signOut()} style={{padding: 10, alignItems:"center", justifyContent:"center", backgroundColor: Colors.Base_Light_Red, borderRadius: 6}}>
-                <SvgRemove />
-            </TouchableOpacity>
-        </View>
-    )
-  }
-
-  //blocked contact item component
-  const BlockedContactItem = () => {
-    return(
-        <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', paddingVertical: 10}}>
-            <View style={{flexDirection:'row', alignItems:"center"}}>
-                <Image source={Images.defaultAvatar} style={{width: 44, height: 44}} />
-                <Text style={{color: Colors.Base_White, fontSize: 18, fontFamily: FontFamily.OutfitRegular, marginLeft:15}}>Alex</Text>
-            </View>
-            <TouchableOpacity>
-                <SvgLock />
-            </TouchableOpacity>
-        </View>
+  //function to show alert for sign out confirmation
+  const showConfirmationAlert = () => {
+    Alert.alert(
+        'Sign Out',
+        'Are you sure you want to sign out of Connect?',
+        [
+            {text: 'Cancel', onPress: () => null},
+            {text: 'Sign Out', onPress: () => signOut()}
+        ],
+        {
+            'cancelable': true,
+            'userInterfaceStyle': 'dark'
+        }
     )
   }
 
@@ -85,22 +60,26 @@ const Accounts = () => {
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
-        <PageHeader headerTitle={'Accounts'} iconArr={['addBtn']} />
+        <PageHeader headerTitle={'Profile'} />
         <View>
             <FlatList
                 data={[1]}
                 showsVerticalScrollIndicator={false}
-                renderItem={UserProfile}
+                renderItem={() => {
+                    return(
+                        <View style={styles.mainContainer}>
+                            <FastImage source={{uri: userInfo?.user?.photo, priority:'high'}} style={styles.contactImg} />
+                            <Text style={styles.userName}>{userInfo?.user?.name}</Text>
+                            <Text style={styles.userEmail}>{userInfo?.user?.email}</Text>
+                            <Text style={styles.userContacts}>{dash?.contacts?.length + ' contacts'}</Text>
+                            <TouchableOpacity onPress={() => showConfirmationAlert()} style={styles.signOutBtn}>
+                                <Text style={styles.signOutText}>Sign Out</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )
+                }}
                 ItemSeparatorComponent={<View style={styles.lineSeparator} />}
-            />
-        </View>
-        <View style={{marginHorizontal: 20, marginTop: 20}}>
-            <Text style={{color: Colors.Base_White, fontSize: 20, fontFamily: FontFamily.OutfitMedium, marginBottom:20}}>Blocked Contacts</Text>
-            <FlatList
-                data={[1, 2, 3, 4]}
-                showsVerticalScrollIndicator={false}
-                renderItem={BlockedContactItem}
-                keyExtractor={(item, index) => index.toString()}
+                keyExtractor={(_, index) => index.toString()}
             />
         </View>
     </SafeAreaView>
@@ -111,6 +90,10 @@ const styles = StyleSheet.create({
     safeAreaView: {
         flex: 1,
         backgroundColor: Colors.BgColor
+    },
+    mainContainer: {
+        flex: 1, 
+        alignItems:'center'
     },
     headerStyle: {
         flexDirection:'row', 
@@ -126,20 +109,46 @@ const styles = StyleSheet.create({
     },
     userName: {
         color: Colors.Base_White, 
-        fontSize: 18, 
+        fontSize: 25, 
         fontWeight: '500', 
-        fontFamily: FontFamily.OutfitMedium
+        fontFamily: FontFamily.OutfitMedium,
+        marginTop: 20
     },
     userEmail: {
         color: Colors.Base_Medium_Grey, 
-        fontSize: 14, 
+        fontSize: 20, 
         fontFamily: FontFamily.OutfitRegular, 
-        marginTop:5
+        marginTop: 20
+    },
+    userContacts: {
+        color: Colors.Base_Medium_Grey, 
+        fontSize: 20, 
+        fontFamily: FontFamily.OutfitRegular, 
+        marginTop: 5
     },
     lineSeparator: {
         height: 1, 
         backgroundColor: Colors.Base_Grey, 
         marginHorizontal: 20
+    },
+    contactImg: {
+        width: 140, 
+        height: 140, 
+        borderRadius: 30
+    },
+    signOutBtn: {
+        marginTop: 50, 
+        backgroundColor: Colors.Base_Light_Red, 
+        borderRadius: 12, 
+        alignItems:'center', 
+        justifyContent:'center', 
+        paddingHorizontal: 20, 
+        paddingVertical: 10
+    },
+    signOutText: {
+        color: Colors.Base_Red, 
+        fontSize: 20, 
+        fontFamily: FontFamily.OutfitMedium
     },
 })
 
