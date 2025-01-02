@@ -1,4 +1,4 @@
-import { View, SafeAreaView, StyleSheet, Platform, TouchableOpacity, Image, Text, TextInput, StatusBar, ScrollView, FlatList } from 'react-native'
+import { View, SafeAreaView, StyleSheet, Platform, TouchableOpacity, Image, Text, TextInput, StatusBar, FlatList } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -20,6 +20,8 @@ import SvgUser from '../../assets/icons/svg/userIcon.svg';
 import SvgCall from '../../assets/icons/svg/callGrey.svg';
 import SvgMail from '../../assets/icons/svg/mailGrey.svg';
 import SvgPlus from '../../assets/icons/svg/plusWhite.svg';
+
+//import custom functions
 import { getUcFirstLetterString } from '../../common/helper/customFun';
 
 const CreateContact = ({ navigation, route }) => {
@@ -167,7 +169,7 @@ const CreateContact = ({ navigation, route }) => {
             onRef={labelRef}
             dropDownList={labelList}
             isEdit={formActionStatus === 'edit' && item?.label}
-            placeholder={formActionStatus === 'edit' && item?.label? getUcFirstLetterString(item?.label): 'Select Label'}
+            placeholder={formActionStatus === 'edit' && item?.label ? getUcFirstLetterString(item?.label) : 'Select Label'}
             dropdownController={dropdownController}
             onSelectEvent={(e) => addIntoPhoneNumber(e?.title, 'label', index)}
             closeDropdown={() => closeDropdown('dropDown1')}
@@ -201,15 +203,15 @@ const CreateContact = ({ navigation, route }) => {
           <View style={styles.inputWithIcon}>
             <SvgMail />
             <View style={{ marginLeft: 20, width: "90%" }}>
-                <TextInput
-                  placeholder={'example@gmail.com'}
-                  value={item?.email}
-                  selectionColor={Colors.Primary}
-                  placeholderTextColor={Colors.Base_Medium_Grey}
-                  style={styles.inputContainer}
-                  keyboardType={'email-address'}
-                  onChangeText={(e) => addIntoEmailId(e, 'email', index)}
-                />
+              <TextInput
+                placeholder={'example@gmail.com'}
+                value={item?.email}
+                selectionColor={Colors.Primary}
+                placeholderTextColor={Colors.Base_Medium_Grey}
+                style={styles.inputContainer}
+                keyboardType={'email-address'}
+                onChangeText={(e) => addIntoEmailId(e, 'email', index)}
+              />
             </View>
           </View>
         </View>
@@ -219,7 +221,7 @@ const CreateContact = ({ navigation, route }) => {
             onRef={labelRef2}
             dropDownList={labelList}
             isEdit={formActionStatus === 'edit'}
-            placeholder={formActionStatus === 'edit'? getUcFirstLetterString(item?.label): 'Select Label'}
+            placeholder={formActionStatus === 'edit' ? getUcFirstLetterString(item?.label) : 'Select Label'}
             dropdownController={dropdownController2}
             onSelectEvent={(e) => addIntoEmailId(e?.title, 'label', index)}
             closeDropdown={() => closeDropdown('dropDown2')}
@@ -242,7 +244,7 @@ const CreateContact = ({ navigation, route }) => {
       setFormActionStatus('edit');
       const contactInfo = route?.params?.info;
       let formData = {};
-      formData.displayName = Platform.OS === 'android'? contactInfo?.displayName: `${contactInfo?.givenName} ${contactInfo?.familyName}`; 
+      formData.displayName = Platform.OS === 'android' ? contactInfo?.displayName : `${contactInfo?.givenName} ${contactInfo?.familyName}`;
       formData.phoneNumbers = contactInfo?.phoneNumbers;
       formData.emailAddresses = contactInfo.emailAddresses;
 
@@ -262,7 +264,7 @@ const CreateContact = ({ navigation, route }) => {
       <View style={styles.upperCurveEffect}>
         <SvgUpperCurve width={screenDimensions?.width} />
       </View>
-      <PageHeader headerTitle={formActionStatus === 'add'? 'Create Contact': 'Edit Contact'} crossBtn iconArr={['saveBtn']} rightBtnClickEvent={() => null} navigation={navigation} />
+      <PageHeader headerTitle={formActionStatus === 'add' ? 'Create Contact' : 'Edit Contact'} crossBtn iconArr={['saveBtn']} rightBtnClickEvent={() => null} navigation={navigation} />
       <KeyboardAwareScrollView enableOnAndroid={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
         <TouchableOpacity activeOpacity={1} onPress={() => null} style={{ alignSelf: "center", marginTop: 20 }}>
           <View style={styles.userPicContainer}>
@@ -337,16 +339,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 10
   },
-  addPicContainer: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    marginTop: 20 
+  addPicContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 20
   },
-  addPicText: { 
-    color: Colors.Base_White, 
-    fontSize: 16, 
-    fontFamily: FontFamily.OutfitRegular, 
-    marginLeft: 10 
+  addPicText: {
+    color: Colors.Base_White,
+    fontSize: 16,
+    fontFamily: FontFamily.OutfitRegular,
+    marginLeft: 10
   },
   actionIconContainer: {
     alignItems: "center",
